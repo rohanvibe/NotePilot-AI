@@ -1,4 +1,16 @@
 import { NextResponse } from "next/server";
+
+// Polyfill for Vercel Serverless environment where pdf-parse dependencies are missing
+if (typeof globalThis.DOMMatrix === "undefined") {
+    (globalThis as any).DOMMatrix = class DOMMatrix { };
+}
+if (typeof globalThis.Path2D === "undefined") {
+    (globalThis as any).Path2D = class Path2D { };
+}
+if (typeof globalThis.ImageData === "undefined") {
+    (globalThis as any).ImageData = class ImageData { };
+}
+
 const pdfParse = require("pdf-parse");
 import mammoth from "mammoth";
 import { generateContent } from "@/lib/sambanova";
