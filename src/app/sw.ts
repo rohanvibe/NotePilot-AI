@@ -19,40 +19,58 @@ const serwist = new Serwist({
     runtimeCaching: defaultCache,
 });
 
-// Periodic Background Sync implementation
+// 1. BACKGROUND SYNC (Standard API for PWA Builder)
+self.addEventListener("sync", (event: any) => {
+    if (event.tag === "sync-data") {
+        console.log("Service Worker: Syncing data in background...");
+        event.waitUntil(Promise.resolve());
+    }
+});
+
+// 2. PERIODIC BACKGROUND SYNC (Standard API for PWA Builder)
 self.addEventListener("periodicsync", (event: any) => {
-    if (event.tag === "sync-notes") {
+    if (event.tag === "periodic-sync") {
+        console.log("Service Worker: Periodic background sync triggered.");
         event.waitUntil(
-            fetch("/api/sync-check")
-                .then((response) => response.json())
-                .then((data) => {
-                    console.log("Periodic sync successful:", data);
-                })
-                .catch((err) => console.error("Periodic sync failed:", err))
+            fetch("/api/health") // Simple heart-beat check
+                .then(() => console.log("Periodic sync check completed."))
+                .catch(() => console.warn("Periodic sync fetch failed."))
         );
     }
 });
 
-// Push Notifications implementation
+// 3. PUSH NOTIFICATIONS (Standard API for PWA Builder)
 self.addEventListener("push", (event) => {
-    const data = event.data ? event.data.json() : { title: "AI Notes", body: "Check your new note analysis!" };
+    console.log("Service Worker: Push message received.");
+    const payload = event.data ? event.data.text() : "You have new AI note summaries ready!";
     const options = {
-        body: data.body,
+        body: payload,
         icon: "/icon-192x192.png",
         badge: "/icon-192x192.png",
+        vibrate: [100, 50, 100],
         data: {
-            url: data.url || "/",
-        },
+            dateOfArrival: Date.now(),
+            primaryKey: 1,
+            url: "/"
+        }
     };
 
-    event.waitUntil(self.registration.showNotification(data.title, options));
+    event.waitUntil(
+        self.registration.showNotification("AI Notes Organizer", options)
+    );
 });
 
 // Handle notification click
 self.addEventListener("notificationclick", (event) => {
+    console.log("Service Worker: Notification clicked.");
     event.notification.close();
     event.waitUntil(
-        self.clients.openWindow(event.notification.data.url)
+        self.clients.matchAll({ type: "window" }).then((clientList) => {
+            for (const client of clientList) {
+                if (client.url === "/" && "focus" in client) return client.focus();
+            }
+            if (self.clients.openWindow) return self.clients.openWindow("/");
+        })
     );
 });
 

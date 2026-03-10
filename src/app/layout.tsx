@@ -66,8 +66,28 @@ export default function RootLayout({
         <Script id="register-sw" strategy="afterInteractive">
           {`
             if ('serviceWorker' in navigator) {
-              window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js');
+              window.addEventListener('load', async function() {
+                try {
+                  const registration = await navigator.serviceWorker.register('/sw.js');
+                  console.log('SW registered:', registration);
+                  
+                  // Background Sync
+                  if ('SyncManager' in window) {
+                    await registration.sync.register('sync-data');
+                  }
+
+                  // Periodic Sync
+                  if ('periodicSync' in registration) {
+                    const status = await navigator.permissions.query({ name: 'periodic-background-sync' as any });
+                    if (status.state === 'granted') {
+                      await (registration as any).periodicSync.register('periodic-sync', {
+                        minInterval: 24 * 60 * 60 * 1000,
+                      });
+                    }
+                  }
+                } catch (err) {
+                  console.error('SW registration failed:', err);
+                }
               });
             }
           `}
