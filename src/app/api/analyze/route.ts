@@ -4,6 +4,22 @@ import mammoth from "mammoth";
 import { generateContent } from "@/lib/sambanova";
 
 export const maxDuration = 60; // Max execution time for Next.js
+export const dynamic = "force-dynamic";
+
+export async function GET() {
+    return NextResponse.json({ status: "API is active. Use POST to upload." }, { status: 200 });
+}
+
+export async function OPTIONS() {
+    return new NextResponse(null, {
+        status: 204,
+        headers: {
+            "Allow": "POST, GET, OPTIONS",
+            "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+            "Access-Control-Allow-Origin": "*",
+        },
+    });
+}
 
 export async function POST(request: Request) {
     try {

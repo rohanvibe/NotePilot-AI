@@ -7,4 +7,5 @@ const withSerwist = withSerwistInit({
 
 export default withSerwist({
   reactStrictMode: true,
+  serverExternalPackages: ["pdf-parse", "mammoth"],
 });
