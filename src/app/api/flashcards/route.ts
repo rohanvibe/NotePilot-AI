@@ -5,8 +5,8 @@ export async function POST(request: Request) {
     try {
         const { text, notesNames } = await request.json();
 
-        const systemPrompt = `You are a helpful study assistant. Generate exactly 5 flashcards from the provided notes content.
-Output them strictly as a JSON array of objects with 'front' and 'back' properties. Do not use markdown backticks, just raw JSON:
+        const systemPrompt = `You are a strict flashcard generator AI. Generate exactly 5 flashcards from the provided notes content. 
+Output them strictly as a JSON array of objects with 'front' and 'back' properties. Do not include ANY extra conversation, explanation, or markdown formatting around the output. Only output valid JSON resembling this exact array:
 [
   { "front": "Question 1?", "back": "Answer 1" },
   { "front": "Question 2?", "back": "Answer 2" }
@@ -17,7 +17,18 @@ Output them strictly as a JSON array of objects with 'front' and 'back' properti
         const aiResponse = await generateContent(systemPrompt, instructions);
 
         const cleanedResponse = aiResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
-        const flashcards = JSON.parse(cleanedResponse);
+
+        let flashcards;
+        try {
+            flashcards = JSON.parse(cleanedResponse);
+        } catch (parseError) {
+            console.error("Failed to parse flashcards JSON:", cleanedResponse);
+            throw new Error("AI provided an invalid response instead of flashcards: " + cleanedResponse.slice(0, 100) + "...");
+        }
+
+        if (!Array.isArray(flashcards)) {
+            throw new Error("AI did not return an array of flashcards.");
+        }
 
         return NextResponse.json({ success: true, flashcards });
     } catch (err: any) {
