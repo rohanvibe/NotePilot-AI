@@ -1,11 +1,29 @@
 {
+    "id": "/?source=pwa",
     "name": "AI Notes Organizer",
     "short_name": "AI Notes",
     "description": "Upload, connect, and organize your notes seamlessly using AI.",
     "start_url": "/",
+    "scope": "/",
+    "lang": "en",
+    "dir": "ltr",
     "display": "standalone",
+    "display_override": [
+        "tabbed",
+        "window-controls-overlay",
+        "standalone"
+    ],
+    "orientation": "portrait-primary",
     "background_color": "#09090b",
     "theme_color": "#4f46e5",
+    "categories": [
+        "productivity",
+        "education",
+        "utilities"
+    ],
+    "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+    "prefer_related_applications": false,
+    "related_applications": [],
     "icons": [
         {
             "src": "/icon-192x192.png",
@@ -16,7 +34,113 @@
             "src": "/icon-512x512.png",
             "sizes": "512x512",
             "type": "image/png",
-            "purpose": "any maskable"
+            "purpose": "any"
+        },
+        {
+            "src": "/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
         }
-    ]
+    ],
+    "screenshots": [
+        {
+            "src": "/screenshot-desktop.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide"
+        },
+        {
+            "src": "/screenshot-mobile.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "form_factor": "narrow"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Study Flashcards",
+            "short_name": "Flashcards",
+            "description": "Review generated flashcards",
+            "url": "/flashcards",
+            "icons": [
+                {
+                    "src": "/icon-192x192.png",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
+            "name": "Chat with Notes",
+            "short_name": "AI Chat",
+            "description": "Ask AI about your notes",
+            "url": "/chat",
+            "icons": [
+                {
+                    "src": "/icon-192x192.png",
+                    "sizes": "192x192"
+                }
+            ]
+        }
+    ],
+    "file_handlers": [
+        {
+            "action": "/",
+            "accept": {
+                "text/plain": [
+                    ".txt",
+                    ".md",
+                    ".csv"
+                ],
+                "application/pdf": [
+                    ".pdf"
+                ],
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+                    ".docx"
+                ]
+            }
+        }
+    ],
+    "share_target": {
+        "action": "/",
+        "method": "POST",
+        "enctype": "multipart/form-data",
+        "params": {
+            "title": "name",
+            "text": "description",
+            "files": [
+                {
+                    "name": "file",
+                    "accept": [
+                        ".txt",
+                        ".md",
+                        ".pdf",
+                        ".docx",
+                        "text/plain",
+                        "application/pdf"
+                    ]
+                }
+            ]
+        }
+    },
+    "protocol_handlers": [
+        {
+            "protocol": "web+ainotes",
+            "url": "/?notes=%s"
+        }
+    ],
+    "launch_handler": {
+        "client_mode": "navigate-existing"
+    },
+    "scope_extensions": [
+        {
+            "origin": "*.vercel.app"
+        }
+    ],
+    "note_taking": {
+        "new_note_url": "/"
+    },
+    "edge_side_panel": {
+        "preferred_width": 400
+    }
 }
