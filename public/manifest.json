@@ -1,5 +1,5 @@
 {
-    "id": "ai-notes-organizer-pwa-final-v3",
+    "id": "ai-notes-organizer-pwa-final-v5",
     "name": "AI Notes Organizer",
     "short_name": "AI Notes",
     "description": "Premium AI-powered note organization with smart summaries and offline flashcards.",
@@ -170,10 +170,10 @@
     },
     "scope_extensions": [
         {
-            "origin": "https://ai-notes-organizer.vercel.app"
+            "origin": "ai-notes-organizer.vercel.app"
         },
         {
-            "origin": "https://*.vercel.app"
+            "origin": "*.vercel.app"
         }
     ],
     "note_taking": {
@@ -181,14 +181,29 @@
     },
     "widgets": [
         {
-            "name": "Recent Analysis",
-            "short_name": "Recent",
-            "description": "See your latest AI notes",
+            "name": "Recent Notes",
+            "tag": "recent-notes",
+            "template": "notes-template",
             "ms_widget": {
-                "template": "card",
+                "template": "notes-template",
                 "data": "/api/widget/latest",
                 "type": "application/json"
-            }
+            },
+            "icons": [
+                {
+                    "src": "/icon-192x192.png",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                }
+            ],
+            "screenshots": [
+                {
+                    "src": "/screenshot_1.png",
+                    "sizes": "1424x884",
+                    "type": "image/png",
+                    "label": "Recent Notes Widget"
+                }
+            ]
         }
     ],
     "edge_side_panel": {
