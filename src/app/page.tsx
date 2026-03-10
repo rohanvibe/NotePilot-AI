@@ -51,9 +51,15 @@ export default function Home() {
         body: formData,
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to analyze files");
+      const responseText = await res.text();
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        throw new Error(`Server Error: ${res.status} - ${responseText.slice(0, 100)}`);
+      }
 
+      if (!res.ok) throw new Error(data.error || "Failed to analyze files");
       addNotes(data.notes);
       router.push("/dashboard");
     } catch (err: any) {
