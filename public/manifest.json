@@ -45,13 +45,25 @@
     ],
     "screenshots": [
         {
-            "src": "/screenshot-desktop.png",
+            "src": "/screenshot_1.png",
             "sizes": "1280x720",
             "type": "image/png",
             "form_factor": "wide"
         },
         {
-            "src": "/screenshot-mobile.png",
+            "src": "/screenshot_2.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "form_factor": "narrow"
+        },
+        {
+            "src": "/screenshot_3.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide"
+        },
+        {
+            "src": "/screenshot_4.png",
             "sizes": "1080x1920",
             "type": "image/png",
             "form_factor": "narrow"
