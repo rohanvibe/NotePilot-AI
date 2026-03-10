@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -62,6 +63,15 @@ export default function RootLayout({
         <main className="flex-1 min-w-0 flex flex-col relative h-screen overflow-y-auto">
           {children}
         </main>
+        <Script id="register-sw" strategy="afterInteractive">
+          {`
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js');
+              });
+            }
+          `}
+        </Script>
       </body>
     </html>
   );
