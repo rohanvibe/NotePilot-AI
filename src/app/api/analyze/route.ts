@@ -117,8 +117,13 @@ Ensure it is valid JSON. Do not include markdown formatting or backticks around 
 
         return NextResponse.json({ success: true, notes: results });
     } catch (err) {
-        console.error(err);
-        const errorMessage = err instanceof Error ? err.message : "Unknown error occured";
-        return NextResponse.json({ error: errorMessage }, { status: 500 });
+        console.error("Critical API Error in /api/analyze:", err);
+        const errorMessage = err instanceof Error ? err.message : "Internal server error during analysis";
+        const stack = err instanceof Error ? err.stack : undefined;
+        return NextResponse.json({
+            error: errorMessage,
+            details: stack,
+            timestamp: new Date().toISOString()
+        }, { status: 500 });
     }
 }

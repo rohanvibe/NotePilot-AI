@@ -249,9 +249,14 @@ export default function Landing() {
           </div>
 
           {error && (
-            <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 font-bold text-sm">
-              <AlertCircle className="w-5 h-5" />
-              {error}
+            <div className="flex flex-col gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 font-bold text-sm max-h-60 overflow-y-auto text-left">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <span>Error Details</span>
+              </div>
+              <pre className="whitespace-pre-wrap font-mono text-xs opacity-80 pl-8">
+                {error}
+              </pre>
             </div>
           )}
 
