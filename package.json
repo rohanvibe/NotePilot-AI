@@ -1,7 +1,21 @@
 {
-  "name": "ai-notes-organizer",
-  "version": "0.1.0",
+  "name": "notepilot-ai",
+  "version": "2.0.0",
   "private": true,
+  "description": "A world-class AI-powered Personal Knowledge Management system and study suite built with Next.js and SambaNova.",
+  "author": "NotePilot AI Team",
+  "license": "MIT",
+  "keywords": [
+    "ai",
+    "notes",
+    "pkm",
+    "second-brain",
+    "knowledge-graph",
+    "spaced-repetition",
+    "nextjs",
+    "sambanova",
+    "llama3"
+  ],
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
@@ -13,6 +27,7 @@
     "@serwist/precaching": "^9.5.6",
     "@serwist/sw": "^9.5.6",
     "clsx": "^2.1.1",
+    "d3-force": "^3.0.0",
     "framer-motion": "^12.35.1",
     "idb-keyval": "^6.2.2",
     "lucide-react": "^0.577.0",
@@ -21,6 +36,7 @@
     "pdf-parse": "^2.4.5",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-force-graph-2d": "^1.29.1",
     "tailwind-merge": "^3.5.0",
     "zustand": "^5.0.11"
   },

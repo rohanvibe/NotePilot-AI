@@ -14,6 +14,7 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
+
   *,
   ::after,
   ::before,
@@ -43,15 +44,18 @@ body {
 
 /* Custom CSS utilities for 3D flip */
 @layer utilities {
-  .perspective-1000 {
+  .perspective {
     perspective: 1000px;
   }
-  .transform-style-3d {
+
+  .preserve-3d {
     transform-style: preserve-3d;
   }
+
   .backface-hidden {
     backface-visibility: hidden;
   }
+
   .rotate-y-180 {
     transform: rotateY(180deg);
   }

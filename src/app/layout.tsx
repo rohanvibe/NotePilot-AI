@@ -6,10 +6,10 @@ import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const APP_NAME = "AI Notes Organizer";
-const APP_DEFAULT_TITLE = "AI Notes Organizer";
-const APP_TITLE_TEMPLATE = "%s - AI Notes Organizer";
-const APP_DESCRIPTION = "Upload, connect, and organize your notes seamlessly using AI.";
+const APP_NAME = "NotePilot AI";
+const APP_DEFAULT_TITLE = "NotePilot AI - Your Personal Second Brain";
+const APP_TITLE_TEMPLATE = "%s | NotePilot AI";
+const APP_DESCRIPTION = "The ultimate AI-powered Personal Knowledge Management system. Upload messy notes and let AI build your second brain with knowledge graphs, flashcards, and interactive study modes.";
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,
@@ -59,8 +59,17 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.className} bg-zinc-950 text-zinc-100 min-h-screen flex antialiased`}>
-        <Sidebar className="w-64 flex-none border-r border-zinc-800 bg-zinc-950/50 hidden md:block" />
-        <main className="flex-1 min-w-0 flex flex-col relative h-screen overflow-y-auto">
+        {/* Mobile Top Bar */}
+        <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-black/80 backdrop-blur-xl border-b border-white/5 z-50 flex items-center justify-between px-6">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-sm">N</div>
+            <span className="font-black tracking-tight">NotePilot</span>
+          </div>
+        </div>
+
+        <Sidebar className="w-64 flex-none border-r border-white/5 bg-black/40 backdrop-blur-xl hidden md:block" />
+
+        <main className="flex-1 min-w-0 flex flex-col relative h-screen overflow-y-auto pt-16 md:pt-0">
           {children}
         </main>
         <Script id="register-sw" strategy="afterInteractive">

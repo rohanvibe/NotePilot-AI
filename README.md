@@ -1,60 +1,116 @@
-# AI Notes Organizer
+<div align="center">
+  <img src="/public/icon-192x192.png" alt="NotePilot AI Logo" width="120" height="120" />
+  
+  # NotePilot AI v2.0
+  
+  ### *Your Chaotic Mess, Synthesized onto your Personal Second Brain.*
+  
+  [![Vercel Deployment](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](https://vercel.com)
+  [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
+  [![SambaNova AI](https://img.shields.io/badge/AI-SambaNova-orange)](https://cloud.sambanova.ai/)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
-A production-ready Progressive Web App (PWA) built with Next.js App Router, Tailwind CSS, and Zustand.
+  [Features](#-features) • [Installation](#-quick-start) • [Tech Stack](#-tech-stack) • [Roadmap](#-roadmap) • [Contributing](#-contributing)
+</div>
 
-This application allows you to upload messy notes (txt, md, pdf, docx, folders) and uses the SambaNova AI API to organize them, extract summaries, generate flashcards, and let you chat with your knowledge base.
+---
 
-## Features
+## 🧠 About NotePilot AI
+NotePilot AI is a world-class **Personal Knowledge Management (PKM)** system and study suite. It transforms unstructured text, markdown, and documents into a logically structured "Second Brain." Using the cutting-edge **SambaNova AI** engine, NotePilot doesn't just store your notes—it understands them.
 
-- **PWA Ready**: Offline-first storage with `idb-keyval` and `zustand/middleware`.
-- **Beautiful UI**: Dark mode glassmorphism interface with `lucide-react` icons and `framer-motion` inspired styling.
-- **Smart AI Organization**: Automatically categorizes files into topics with AI-generated summaries and key points.
-- **Flashcard Generation**: Extracts questions and answers directly from uploaded notes for studying.
-- **Chat with Notes**: A RAG-lite experience entirely on the client side sending your context to the SambaNova API through a secure Next.js edge-friendly backend route.
+## ✨ Features
 
-## Setup Instructions
+### 🌪️ Chaos to Knowledge
+Drop a folder of messy `.txt` or `.md` files. AI automatically renames, categorizes, and summarizes them into logical topics.
 
-1. Clone the repository:
-   ```bash
-   git clone <repo_url>
-   cd ai-notes-organizer
-   ```
+### 🕸️ Semantic Knowledge Graph
+Visualize the architecture of your brain. See how "Quantum Physics" relates to "Linear Algebra" through conceptual threads identified by AI.
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+### 🎓 Smart Study Arena
+- **Auto-Flashcards**: Instant Spaced Repetition (SM-2) cards generated from your content.
+- **Study Mode**: Interactive quizzes that provide deep logical insights for every answer.
+- **Course Builder**: Automatic learning paths (101 -> Advanced) curated from your materials.
 
-3. Environment Variables:
-   Copy `.env.example` to `.env` and configure your API key.
-   ```bash
-   cp .env.example .env
-   ```
-   Add your `SAMBANOVA_API_KEY` to `.env`.
+### 💬 Brain Chat (RAG)
+Chat with your entire library. NotePilot uses **Retrieval-Augmented Generation** to answer questions with direct citations (links) to your source notes.
 
-4. Run the development server:
-   ```bash
-   npm run dev
-   ```
+### 📝 Exam Revision Generator
+Generating high-density revision guides, key formulas, and custom 7-day study plans for any topic in your dashboard.
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+---
 
-## Deployment on Vercel
+## 🛠 Tech Stack
 
-1. Push this repository to GitHub.
-2. Go to Vercel and create a new project.
-3. Import the GitHub repository.
-4. In the Environment Variables section, add `SAMBANOVA_API_KEY`.
-5. Deploy! Vercel will automatically build the Next.js project and deploy the PWA.
+- **Framework**: [Next.js 15 (App Router)](https://nextjs.org/)
+- **Intelligence**: [SambaNova Cloud](https://cloud.sambanova.ai/) (Llama 3.1 405B/70B/8B)
+- **State Architecture**: [Zustand](https://github.com/pmndrs/zustand) + [IndexedDB](https://github.com/jakearchibald/idb-keyval) (Offline Persistence)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (Glassmorphism System)
+- **Visualization**: [React Force Graph](https://github.com/vasturiano/react-force-graph)
+- **Icons**: [Lucide React](https://lucide.dev/)
 
-## Architecture
+---
 
-- **Frontend**: Next.js 15 (React 19), Tailwind CSS v4, Zustand (indexedDB persistence).
-- **Backend API**: Next.js API Routes (Node.js runtime required for `pdf-parse` and `mammoth`).
-- **AI**: SambaNova `Meta-Llama-3.1-8B-Instruct`.
+## 🚀 Quick Start
 
-## Security
+### 1. Requirements
+- Node.js 20+
+- SambaNova API Key
 
-The `SAMBANOVA_API_KEY` is fully protected:
-- Never exposed to the browser.
-- Uses server-side API routes (`/api/analyze`, `/api/chat`, `/api/flashcards`) to interact with the LLM.
+### 2. Installation
+```bash
+# Clone the repository
+git clone https://github.com/your-username/ai-notes-organizer.git
+
+# Enter directory
+cd ai-notes-organizer
+
+# Install dependencies
+npm install
+```
+
+### 3. Configuration
+Create a `.env` file in the root:
+```env
+SAMBANOVA_API_KEY=your_key_here
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+### 4. Lift off
+```bash
+npm run dev
+```
+Visit `localhost:3000` to start sync.
+
+---
+
+## 🗺 Roadmap
+- [x] v2.0 Knowledge Graph & Course Builder
+- [ ] PDF & Docx native parsing support (Server-side)
+- [ ] Voice-to-Note (AI Transcription)
+- [ ] Collaborative Shareable Brains
+- [ ] Mobile App (Capacitor/React Native)
+
+---
+
+## 🤝 Contributing
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## 📧 Contact
+Project Link: [https://github.com/your-username/ai-notes-organizer](https://github.com/your-username/ai-notes-organizer)
+
+<div align="center">
+  Built with ❤️ for learners everywhere.
+</div>

@@ -2,139 +2,231 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { UploadCloud, FolderUp, Loader2, Sparkles, AlertCircle } from "lucide-react";
+import { UploadCloud, FolderUp, Loader2, Sparkles, AlertCircle, CheckCircle2, ArrowRight, ShieldCheck, X } from "lucide-react";
 import { useStore } from "@/store/useStore";
 
-export default function Home() {
-  const [isDragging, setIsDragging] = useState(false);
+export default function Landing() {
+  const { addNotes, addFlashcards, notes } = useStore();
+  const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { addNotes } = useStore();
-  const router = useRouter();
-
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    setError(null);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      processFiles(Array.from(e.dataTransfer.files));
-    }
-  }, []);
-
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setError(null);
-    if (e.target.files && e.target.files.length > 0) {
-      processFiles(Array.from(e.target.files));
-    }
-  };
+  const [showPermission, setShowPermission] = useState(false);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [summary, setSummary] = useState<any>(null);
 
   const processFiles = async (files: File[]) => {
     setIsUploading(true);
+    setError(null);
     try {
-      const formData = new FormData();
-      files.forEach((file) => {
-        formData.append("file", file);
-      });
+      // Read files
+      const notesData = await Promise.all(
+        files.map(async (file) => {
+          const text = await file.text();
+          return { name: file.name, content: text };
+        })
+      );
 
-      const res = await fetch("/api/analyze", {
+      // API call to organize and analyze
+      const res = await fetch("/api/organize", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ files: notesData })
       });
 
-      const responseText = await res.text();
-      let data;
-      try {
-        data = JSON.parse(responseText);
-      } catch (e) {
-        throw new Error(`Server Error: ${res.status} - ${responseText.slice(0, 100)}`);
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+
+      // Update store
+      const newNotes = data.results.map((r: any) => ({
+        id: crypto.randomUUID(),
+        name: r.name,
+        content: r.content,
+        topic: r.topic,
+        summary: r.summary,
+        keyPoints: r.keyPoints,
+        importantTerms: r.importantTerms,
+        createdAt: Date.now()
+      }));
+
+      addNotes(newNotes);
+
+      // Generate flashcards for new notes
+      const fRes = await fetch("/api/flashcards", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notes: newNotes })
+      });
+      const fData = await fRes.json();
+      if (fData.success) {
+        addFlashcards(fData.flashcards.map((f: any) => ({
+          ...f,
+          id: crypto.randomUUID(),
+          nextReviewDate: Date.now(),
+          difficulty: 'new',
+          interval: 0,
+          ease: 2.5,
+          reviewCount: 0
+        })));
       }
 
-      if (!res.ok) throw new Error(data.error || "Failed to analyze files");
-      addNotes(data.notes);
-      router.push("/dashboard");
+      setSummary(data.summary);
     } catch (err: any) {
-      setError(err.message || "An unknown error occurred.");
+      setError(err.message);
     } finally {
       setIsUploading(false);
     }
   };
 
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type === "text/plain" || f.name.endsWith(".md") || f.name.endsWith(".txt"));
+    if (files.length > 0) {
+      setPendingFiles(files);
+      setShowPermission(true);
+    }
+  }, []);
+
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-6 bg-zinc-950 relative overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none" />
-
-      <div className="max-w-xl w-full text-center space-y-8 z-10">
-        <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-medium mb-4">
-            <Sparkles className="w-4 h-4" />
-            AI-Powered Knowledge Hub
-          </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white">
-            Upload & Connect <br /> Your Messy Notes
-          </h1>
-          <p className="text-zinc-400 text-lg max-w-md mx-auto">
-            Drop your PDFs, Word docs, Markdown, or raw text files. We'll automatically organize and summarize them using AI.
-          </p>
-        </div>
-
-        <div
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          className={`
-            border-2 border-dashed rounded-3xl p-12 transition-all duration-300 relative bg-zinc-900/50 backdrop-blur-xl group
-            ${isDragging ? "border-indigo-500 bg-indigo-500/5" : "border-zinc-800 hover:border-zinc-700"}
-          `}
-        >
-          {isUploading ? (
-            <div className="flex flex-col items-center justify-center space-y-4">
-              <Loader2 className="w-12 h-12 text-indigo-500 animate-spin" />
-              <p className="text-zinc-300 font-medium animate-pulse">Analyzing & Extracting Notes...</p>
+    <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 space-y-12">
+      {!summary ? (
+        <div className="w-full max-w-4xl space-y-12 text-center">
+          <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-700">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
+              <Sparkles className="w-3 h-3" />
+              AI Powered v2.0
             </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center space-y-6">
-              <div className="w-20 h-20 rounded-2xl bg-zinc-800/80 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                <UploadCloud className="w-10 h-10 text-zinc-400 group-hover:text-indigo-400 transition-colors" />
-              </div>
-              <div className="space-y-2">
-                <p className="text-xl font-medium text-zinc-200">Drag & Drop your files</p>
-                <p className="text-zinc-500 text-sm">Supports .txt, .md, .pdf, .docx</p>
-              </div>
+            <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white">
+              Messy Notes to <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Genius.</span>
+            </h1>
+            <p className="text-slate-500 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
+              Upload your unstructured text files. Our AI will categorize, summarize, and build a knowledge graph for you.
+            </p>
+          </div>
 
-              <div className="flex items-center gap-4 pt-4">
-                <label className="relative cursor-pointer bg-white text-zinc-950 px-6 py-2.5 rounded-full font-medium hover:bg-zinc-200 transition-colors flex items-center gap-2">
-                  <UploadCloud className="w-4 h-4" />
-                  Select Files
-                  <input type="file" multiple className="hidden" accept=".txt,.md,.pdf,.docx" onChange={handleFileInput} />
-                </label>
-                <label className="relative cursor-pointer bg-zinc-800 text-white px-6 py-2.5 rounded-full font-medium hover:bg-zinc-700 transition-colors flex items-center gap-2">
-                  <FolderUp className="w-4 h-4" />
-                  Select Folder
-                  <input type="file" {...{ webkitdirectory: "true", directory: "true" }} className="hidden" onChange={handleFileInput} />
-                </label>
-              </div>
+          <div
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={onDrop}
+            className="relative group h-80 rounded-[64px] border-4 border-dashed border-white/5 hover:border-indigo-500/50 bg-white/5 transition-all flex flex-col items-center justify-center space-y-6 cursor-pointer overflow-hidden shadow-2xl"
+          >
+            <div className="absolute inset-0 bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="p-8 rounded-[32px] bg-indigo-500/10 text-indigo-400 group-hover:scale-110 transition-transform duration-500">
+              {isUploading ? <Loader2 className="w-12 h-12 animate-spin" /> : <UploadCloud className="w-12 h-12" />}
+            </div>
+            <div className="space-y-2 relative z-10">
+              <p className="text-2xl font-black">{isUploading ? 'Processing Brain...' : 'Drop your chaos here'}</p>
+              <p className="text-slate-500 font-bold text-sm tracking-tight uppercase">Supports .txt and .md files</p>
+            </div>
+            <input
+              type="file"
+              multiple
+              className="absolute inset-0 opacity-0 cursor-pointer"
+              onChange={(e) => {
+                const files = Array.from(e.target.files || []);
+                if (files.length > 0) {
+                  setPendingFiles(files);
+                  setShowPermission(true);
+                }
+              }}
+            />
+          </div>
+
+          {error && (
+            <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 font-bold text-sm">
+              <AlertCircle className="w-5 h-5" />
+              {error}
             </div>
           )}
-        </div>
 
-        {error && (
-          <div className="flex items-center gap-2 justify-center text-red-400 bg-red-500/10 py-3 px-4 rounded-xl border border-red-500/20">
-            <AlertCircle className="w-5 h-5" />
-            <p className="text-sm font-medium">{error}</p>
+          {notes.length > 0 && (
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="px-10 py-5 bg-white text-black rounded-3xl font-black text-xl hover:scale-105 transition-all flex items-center gap-3 mx-auto shadow-2xl"
+            >
+              Go to Dashboard
+              <ArrowRight className="w-6 h-6" />
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="w-full max-w-3xl space-y-10 animate-in zoom-in duration-700">
+          <div className="text-center space-y-4">
+            <div className="w-24 h-24 rounded-[32px] bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="w-12 h-12" />
+            </div>
+            <h2 className="text-5xl font-black">Knowledge Synthesized</h2>
+            <p className="text-slate-400 text-lg font-medium">Behold the impact of AI organization on your messy notes.</p>
           </div>
-        )}
-      </div>
+
+          <div className="bg-slate-900 border border-white/5 rounded-[48px] p-10 space-y-10 shadow-3xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <section className="space-y-4">
+                <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-500" /> Structure Evolution
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center text-sm font-bold">
+                    <span className="text-slate-400 italic">Messy Chaos</span>
+                    <span className="text-indigo-400">Structured Topics</span>
+                  </div>
+                  <div className="h-3 bg-white/5 rounded-full overflow-hidden flex">
+                    <div className="h-full bg-indigo-500 w-[70%]" />
+                  </div>
+                  <p className="text-slate-300 text-sm leading-relaxed">{summary.impact}</p>
+                </div>
+              </section>
+
+              <section className="space-y-4">
+                <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-purple-500" /> AI Insights
+                </h3>
+                <div className="p-6 rounded-2xl bg-white/5 border border-white/5">
+                  <p className="text-slate-400 text-sm italic italic">"{summary.topInsight}"</p>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="w-full py-6 bg-white text-black rounded-[28px] text-2xl font-black transition-all hover:scale-105 flex items-center justify-center gap-4 shadow-3xl shadow-white/5"
+          >
+            Enter Second Brain
+            <ArrowRight className="w-8 h-8" />
+          </button>
+        </div>
+      )}
+
+      {/* Permission Modal */}
+      {showPermission && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+          <div className="bg-[#0a0a0b] border border-white/10 w-full max-w-lg rounded-[48px] p-10 space-y-8 animate-in zoom-in duration-300 relative">
+            <button onClick={() => setShowPermission(false)} className="absolute top-8 right-8 text-slate-500 hover:text-white">
+              <X className="w-6 h-6" />
+            </button>
+            <div className="w-20 h-20 rounded-3xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-4">
+              <ShieldCheck className="w-10 h-10" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-3xl font-black text-white leading-tight">AI Folder Intelligence</h2>
+              <p className="text-slate-500 font-medium">NotePilot wants to rename and categorize your {pendingFiles.length} files to create a logical knowledge structure.</p>
+            </div>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => { setShowPermission(false); processFiles(pendingFiles); }}
+                className="w-full py-5 bg-indigo-600 hover:bg-indigo-500 rounded-2xl font-black text-white transition-all"
+              >
+                Grant AI Permissions
+              </button>
+              <button
+                onClick={() => setShowPermission(false)}
+                className="w-full py-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl font-black text-slate-400 transition-all"
+              >
+                Cancel Upload
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
