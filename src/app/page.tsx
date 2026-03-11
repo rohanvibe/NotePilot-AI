@@ -15,12 +15,14 @@ import {
 import { useStore } from "@/store/useStore";
 
 interface OrganizingResult {
+  id: string;
   name: string;
   content: string;
   topic: string;
   summary: string;
   keyPoints: string[];
   importantTerms: string[];
+  createdAt: number;
 }
 
 interface SummaryResult {
@@ -46,34 +48,31 @@ export default function Landing() {
     setIsUploading(true);
     setError(null);
     try {
-      // Read files
-      const notesData = await Promise.all(
-        files.map(async (file) => {
-          const text = await file.text();
-          return { name: file.name, content: text };
-        })
-      );
+      const formData = new FormData();
+      files.forEach((file) => {
+        formData.append("file", file);
+      });
 
-      // API call to organize and analyze
-      const res = await fetch("/api/organize", {
+      // API call to analyze (handles text extraction and AI tagging)
+      const res = await fetch("/api/analyze", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ files: notesData }),
+        body: formData,
       });
 
       const data = await res.json();
-      if (!data.success) throw new Error(data.error);
+      if (!res.ok) throw new Error(data.error || "Failed to process files");
+      if (!data.notes) throw new Error("AI analysis did not return any usable notes.");
 
-      // Update store
-      const newNotes = data.results.map((r: OrganizingResult) => ({
-        id: crypto.randomUUID(),
+      // Update store with analyzed notes
+      const newNotes = data.notes.map((r: OrganizingResult) => ({
+        id: r.id || crypto.randomUUID(),
         name: r.name,
         content: r.content,
         topic: r.topic,
         summary: r.summary,
         keyPoints: r.keyPoints,
         importantTerms: r.importantTerms,
-        createdAt: Date.now(),
+        createdAt: r.createdAt || Date.now(),
       }));
 
       addNotes(newNotes);
@@ -82,7 +81,10 @@ export default function Landing() {
       const fRes = await fetch("/api/flashcards", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notes: newNotes }),
+        body: JSON.stringify({
+          text: newNotes.map((n: OrganizingResult) => n.content).join("\n\n"),
+          notesNames: newNotes.map((n: OrganizingResult) => n.name),
+        }),
       });
       const fData = await fRes.json();
       if (fData.success) {
@@ -95,12 +97,18 @@ export default function Landing() {
             interval: 0,
             ease: 2.5,
             reviewCount: 0,
+            noteId: newNotes[0]?.id, // Link to first note for now or handle per-note later
           }))
         );
       }
 
-      setSummary(data.summary);
+      // Generate a quick summary metadata
+      setSummary({
+        impact: `Transformed ${newNotes.length} messy inputs into structured knowledge.`,
+        topInsight: newNotes[0]?.summary || "Your notes are now searchable and organized.",
+      });
     } catch (err: unknown) {
+      console.error("Processing error:", err);
       if (err instanceof Error) {
         setError(err.message);
       } else {
@@ -111,16 +119,67 @@ export default function Landing() {
     }
   };
 
-  const onDrop = useCallback((e: React.DragEvent) => {
+  const traverseFileTree = async (item: any): Promise<File[]> => {
+    return new Promise((resolve) => {
+      if (item.isFile) {
+        item.file((file: File) => {
+          resolve([file]);
+        });
+      } else if (item.isDirectory) {
+        const dirReader = item.createReader();
+        dirReader.readEntries(async (entries: any[]) => {
+          const files = await Promise.all(entries.map((entry) => traverseFileTree(entry)));
+          resolve(files.flat());
+        });
+      } else {
+        resolve([]);
+      }
+    });
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    const files = Array.from(e.dataTransfer.files).filter(
-      (f) => f.type === "text/plain" || f.name.endsWith(".md") || f.name.endsWith(".txt")
-    );
+    e.stopPropagation();
+  };
+
+  const onDrop = useCallback(async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const items = e.dataTransfer.items;
+    if (!items) return;
+
+    const allFiles: File[] = [];
+    const promises = [];
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i].webkitGetAsEntry();
+      if (item) {
+        promises.push(traverseFileTree(item));
+      }
+    }
+
+    const filesArray = await Promise.all(promises);
+    const flattenedFiles = filesArray.flat();
+
+    const validFiles = flattenedFiles.filter((f) => {
+      const ext = f.name.split(".").pop()?.toLowerCase();
+      return ["txt", "md", "pdf", "docx", "csv"].includes(ext || "");
+    });
+
+    if (validFiles.length > 0) {
+      setPendingFiles(validFiles);
+      setShowPermission(true);
+    }
+  }, []);
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
     if (files.length > 0) {
       setPendingFiles(files);
       setShowPermission(true);
     }
-  }, []);
+  };
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 space-y-12">
@@ -138,13 +197,13 @@ export default function Landing() {
               </span>
             </h1>
             <p className="text-slate-500 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
-              Upload your unstructured text files. Our AI will categorize, summarize,
-              and build a knowledge graph for you.
+              Upload your unstructured text files or folders. Our AI will categorize,
+              summarize, and build a knowledge graph.
             </p>
           </div>
 
           <div
-            onDragOver={(e) => e.preventDefault()}
+            onDragOver={handleDragOver}
             onDrop={onDrop}
             className="relative group h-80 rounded-[64px] border-4 border-dashed border-white/5 hover:border-indigo-500/50 bg-white/5 transition-all flex flex-col items-center justify-center space-y-6 cursor-pointer overflow-hidden shadow-2xl"
           >
@@ -158,23 +217,19 @@ export default function Landing() {
             </div>
             <div className="space-y-2 relative z-10">
               <p className="text-2xl font-black">
-                {isUploading ? "Processing Brain..." : "Drop your chaos here"}
+                {isUploading ? "Processing Brain..." : "Drop files or folders here"}
               </p>
               <p className="text-slate-500 font-bold text-sm tracking-tight uppercase">
-                Supports .txt and .md files
+                Supports .txt, .md, .pdf, .docx
               </p>
             </div>
             <input
               type="file"
               multiple
+              // @ts-expect-error webkitdirectory is non-standard but supported
+              webkitdirectory=""
               className="absolute inset-0 opacity-0 cursor-pointer"
-              onChange={(e) => {
-                const files = Array.from(e.target.files || []);
-                if (files.length > 0) {
-                  setPendingFiles(files);
-                  setShowPermission(true);
-                }
-              }}
+              onChange={handleFileInput}
             />
           </div>
 
@@ -284,7 +339,10 @@ export default function Landing() {
                 Grant AI Permissions
               </button>
               <button
-                onClick={() => setShowPermission(false)}
+                onClick={() => {
+                  setShowPermission(false);
+                  setPendingFiles([]);
+                }}
                 className="w-full py-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl font-black text-slate-400 transition-all"
               >
                 Cancel Upload

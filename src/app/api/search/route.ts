@@ -9,7 +9,7 @@ export async function POST(request: Request) {
         const { query, notes } = (await request.json()) as { query: string; notes: Note[] };
 
         if (!query || !notes || notes.length === 0) {
-            return NextResponse.json({ results: [] });
+            return NextResponse.json({ success: true, rankings: [] });
         }
 
         // We'll ask the AI to rank the notes by relevance to the query
