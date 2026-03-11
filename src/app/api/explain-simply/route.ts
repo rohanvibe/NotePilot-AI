@@ -5,7 +5,7 @@ export const maxDuration = 60;
 
 export async function POST(request: Request) {
     try {
-        const { text } = await request.json();
+        const { text } = (await request.json()) as { text: string };
 
         if (!text) {
             return NextResponse.json({ error: "No text provided" }, { status: 400 });
@@ -28,8 +28,9 @@ export async function POST(request: Request) {
         const explanation = await generateContent(systemPrompt, text);
 
         return NextResponse.json({ success: true, explanation });
-    } catch (err: any) {
+    } catch (err) {
         console.error(err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        const errorMessage = err instanceof Error ? err.message : "Internal error";
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }

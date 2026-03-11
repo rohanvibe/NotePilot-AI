@@ -28,6 +28,11 @@ interface SummaryResult {
   topInsight: string;
 }
 
+interface RawFlashcard {
+  front: string;
+  back: string;
+}
+
 export default function Landing() {
   const { addNotes, addFlashcards, notes } = useStore();
   const router = useRouter();
@@ -82,7 +87,7 @@ export default function Landing() {
       const fData = await fRes.json();
       if (fData.success) {
         addFlashcards(
-          fData.flashcards.map((f: any) => ({
+          fData.flashcards.map((f: RawFlashcard) => ({
             ...f,
             id: crypto.randomUUID(),
             nextReviewDate: Date.now(),
@@ -109,8 +114,7 @@ export default function Landing() {
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     const files = Array.from(e.dataTransfer.files).filter(
-      (f) =>
-        f.type === "text/plain" || f.name.endsWith(".md") || f.name.endsWith(".txt")
+      (f) => f.type === "text/plain" || f.name.endsWith(".md") || f.name.endsWith(".txt")
     );
     if (files.length > 0) {
       setPendingFiles(files);
@@ -134,8 +138,8 @@ export default function Landing() {
               </span>
             </h1>
             <p className="text-slate-500 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
-              Upload your unstructured text files. Our AI will categorize,
-              summarize, and build a knowledge graph for you.
+              Upload your unstructured text files. Our AI will categorize, summarize,
+              and build a knowledge graph for you.
             </p>
           </div>
 
@@ -207,8 +211,8 @@ export default function Landing() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <section className="space-y-4">
                 <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-500" />{" "}
-                  Structure Evolution
+                  <ShieldCheck className="w-4 h-4 text-emerald-500" /> Structure
+                  Evolution
                 </h3>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center text-sm font-bold">
@@ -265,9 +269,8 @@ export default function Landing() {
                 AI Folder Intelligence
               </h2>
               <p className="text-slate-500 font-medium">
-                NotePilot wants to rename and categorize your{" "}
-                {pendingFiles.length} files to create a logical knowledge
-                structure.
+                NotePilot wants to rename and categorize your {pendingFiles.length}{" "}
+                files to create a logical knowledge structure.
               </p>
             </div>
             <div className="flex flex-col gap-3">

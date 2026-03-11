@@ -2,16 +2,20 @@ import { NextResponse } from "next/server";
 
 // Polyfill for Vercel Serverless environment where pdf-parse dependencies are missing
 if (typeof globalThis.DOMMatrix === "undefined") {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (globalThis as any).DOMMatrix = class DOMMatrix { };
 }
 if (typeof globalThis.Path2D === "undefined") {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (globalThis as any).Path2D = class Path2D { };
 }
 if (typeof globalThis.ImageData === "undefined") {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (globalThis as any).ImageData = class ImageData { };
 }
 
-const pdfParse = require("pdf-parse");
+// @ts-expect-error pdf-parse lacks types
+import pdfParse from "pdf-parse";
 import mammoth from "mammoth";
 import { generateContent } from "@/lib/sambanova";
 
@@ -26,7 +30,7 @@ export async function OPTIONS() {
     return new NextResponse(null, {
         status: 204,
         headers: {
-            "Allow": "POST, GET, OPTIONS",
+            Allow: "POST, GET, OPTIONS",
             "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
             "Access-Control-Allow-Origin": "*",
         },
@@ -49,14 +53,14 @@ export async function POST(request: Request) {
             const buffer = Buffer.from(arrayBuffer);
             let text = "";
 
-            const ext = file.name.split('.').pop()?.toLowerCase();
+            const ext = file.name.split(".").pop()?.toLowerCase();
 
-            if (ext === 'txt' || ext === 'md' || ext === 'csv') {
-                text = buffer.toString('utf-8');
-            } else if (ext === 'pdf') {
+            if (ext === "txt" || ext === "md" || ext === "csv") {
+                text = buffer.toString("utf-8");
+            } else if (ext === "pdf") {
                 const data = await pdfParse(buffer);
                 text = data.text;
-            } else if (ext === 'docx') {
+            } else if (ext === "docx") {
                 const result = await mammoth.extractRawText({ buffer });
                 text = result.value;
             } else {
@@ -82,17 +86,24 @@ Ensure it is valid JSON. Do not include markdown formatting or backticks around 
             const aiResponse = await generateContent(systemPrompt, text);
 
             try {
-                const cleanedResponse = aiResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
+                const cleanedResponse = aiResponse
+                    .replace(/```json/gi, "")
+                    .replace(/```/g, "")
+                    .trim();
                 const parsedAnalysis = JSON.parse(cleanedResponse);
                 results.push({
                     id: crypto.randomUUID(),
                     name: file.name,
                     content: text,
                     ...parsedAnalysis,
-                    createdAt: Date.now()
+                    createdAt: Date.now(),
                 });
-            } catch (e) {
-                console.error("Failed to parse AI response as JSON for file:", file.name, aiResponse);
+            } catch {
+                console.error(
+                    "Failed to parse AI response as JSON for file:",
+                    file.name,
+                    aiResponse
+                );
                 // Fallback
                 results.push({
                     id: crypto.randomUUID(),
@@ -102,14 +113,15 @@ Ensure it is valid JSON. Do not include markdown formatting or backticks around 
                     summary: "Could not generate summary.",
                     keyPoints: [],
                     importantTerms: [],
-                    createdAt: Date.now()
+                    createdAt: Date.now(),
                 });
             }
         }
 
         return NextResponse.json({ success: true, notes: results });
-    } catch (err: any) {
+    } catch (err) {
         console.error(err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        const errorMessage = err instanceof Error ? err.message : "Unknown error occured";
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }

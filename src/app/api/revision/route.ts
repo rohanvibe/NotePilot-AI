@@ -11,7 +11,9 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "No text provided" }, { status: 400 });
         }
 
-        const systemPrompt = `You are an AI Exam Expert. Create a comprehensive revision guide for the files: ${notesNames?.join(', ')}.
+        const systemPrompt = `You are an AI Exam Expert. Create a comprehensive revision guide for the files: ${notesNames?.join(
+            ", "
+        )}.
         Output a strict JSON object with these sections:
         {
           "summary": "A high-level executive summary of the entire subject",
@@ -23,12 +25,16 @@ export async function POST(request: Request) {
         Ensure it is valid JSON. No markdown formatting.`;
 
         const aiResponse = await generateContent(systemPrompt, text);
-        const cleanedResponse = aiResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
+        const cleanedResponse = aiResponse
+            .replace(/```json/gi, "")
+            .replace(/```/g, "")
+            .trim();
         const revision = JSON.parse(cleanedResponse);
 
         return NextResponse.json({ success: true, revision });
-    } catch (err: any) {
+    } catch (err) {
         console.error(err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        const errorMessage = err instanceof Error ? err.message : "Internal error";
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }

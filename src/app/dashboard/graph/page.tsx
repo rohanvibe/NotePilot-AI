@@ -1,13 +1,16 @@
 "use client";
 
-import Sidebar from "@/components/Sidebar";
 import { RefreshCw } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import dynamic from "next/dynamic";
 
 const KnowledgeGraph = dynamic(() => import("@/components/KnowledgeGraph"), {
     ssr: false,
-    loading: () => <div className="w-full h-[600px] flex items-center justify-center bg-slate-900/50 rounded-2xl border border-white/10 text-slate-500 font-medium">Initializing Graph...</div>
+    loading: () => (
+        <div className="w-full h-[600px] flex items-center justify-center bg-slate-900/50 rounded-2xl border border-white/10 text-slate-500 font-medium">
+            Initializing Graph...
+        </div>
+    ),
 });
 
 export default function GraphPage() {
@@ -28,7 +31,7 @@ export default function GraphPage() {
                         const res = await fetch("/api/analyze-relationships", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ notes })
+                            body: JSON.stringify({ notes }),
                         });
                         const data = await res.json();
                         if (data.success) {

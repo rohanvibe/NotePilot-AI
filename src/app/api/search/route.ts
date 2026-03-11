@@ -1,22 +1,23 @@
 import { NextResponse } from "next/server";
 import { generateContent } from "@/lib/sambanova";
+import { Note } from "@/store/useStore";
 
 export const maxDuration = 60;
 
 export async function POST(request: Request) {
     try {
-        const { query, notes } = await request.json();
+        const { query, notes } = (await request.json()) as { query: string; notes: Note[] };
 
         if (!query || !notes || notes.length === 0) {
             return NextResponse.json({ results: [] });
         }
 
         // We'll ask the AI to rank the notes by relevance to the query
-        const noteSummaries = notes.map((n: any) => ({
+        const noteSummaries = notes.map((n: Note) => ({
             id: n.id,
             name: n.name,
             topic: n.topic,
-            summary: n.summary
+            summary: n.summary,
         }));
 
         const systemPrompt = `You are a Semantic Search Engine. Given a user query and a list of note summaries, identify which notes are most relevant to the concept mentioned in the query.
@@ -31,12 +32,16 @@ export async function POST(request: Request) {
         const userMessage = `Query: "${query}"\n\nNotes:\n${JSON.stringify(noteSummaries)}`;
 
         const aiResponse = await generateContent(systemPrompt, userMessage);
-        const cleanedResponse = aiResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
+        const cleanedResponse = aiResponse
+            .replace(/```json/gi, "")
+            .replace(/```/g, "")
+            .trim();
         const rankings = JSON.parse(cleanedResponse);
 
         return NextResponse.json({ success: true, rankings });
-    } catch (err: any) {
+    } catch (err) {
         console.error(err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        const errorMessage = err instanceof Error ? err.message : "Internal error";
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }

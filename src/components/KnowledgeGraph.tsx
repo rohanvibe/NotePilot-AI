@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useRef, useEffect, useState, useMemo } from "react";
-import ForceGraph2D, { ForceGraphMethods } from "react-force-graph-2d";
+import React, { useRef, useMemo } from "react";
+import ForceGraph2D from "react-force-graph-2d";
 import { useStore } from "@/store/useStore";
 import { useRouter } from "next/navigation";
 
@@ -25,16 +25,10 @@ interface GraphLink {
 export default function KnowledgeGraph() {
     const { notes, relationships } = useStore();
     const router = useRouter();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fgRef = useRef<any>(null);
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     const graphData = useMemo(() => {
-        if (!mounted) return { nodes: [], links: [] };
-
         // Create nodes
         const nodes: GraphNode[] = notes.map((note) => ({
             id: note.id,
@@ -79,13 +73,7 @@ export default function KnowledgeGraph() {
         });
 
         return { nodes, links };
-    }, [notes, relationships, mounted]);
-
-    if (!mounted) {
-        return (
-            <div className="w-full h-full flex items-center justify-center">Loading Graph...</div>
-        );
-    }
+    }, [notes, relationships]);
 
     return (
         <div className="w-full h-[600px] bg-slate-900/50 rounded-2xl border border-white/10 overflow-hidden relative">
@@ -96,13 +84,13 @@ export default function KnowledgeGraph() {
                 nodeAutoColorBy="topic"
                 linkDirectionalParticles={1}
                 linkDirectionalParticleSpeed={() => 0.01}
-                onNodeClick={(node: any) => {
+                onNodeClick={(node: unknown) => {
                     const gNode = node as GraphNode;
                     if (gNode.type === "note") {
                         router.push(`/dashboard?noteId=${gNode.id}`);
                     }
                 }}
-                nodeCanvasObject={(node: any, ctx, globalScale) => {
+                nodeCanvasObject={(node: unknown, ctx, globalScale) => {
                     const gNode = node as GraphNode;
                     const label = gNode.name;
                     const fontSize = 12 / globalScale;
@@ -133,7 +121,7 @@ export default function KnowledgeGraph() {
 
                     gNode.__bckgDimensions = bckgDimensions;
                 }}
-                nodePointerAreaPaint={(node: any, color, ctx) => {
+                nodePointerAreaPaint={(node: unknown, color, ctx) => {
                     const gNode = node as GraphNode;
                     ctx.fillStyle = color;
                     const bckgDimensions = gNode.__bckgDimensions;

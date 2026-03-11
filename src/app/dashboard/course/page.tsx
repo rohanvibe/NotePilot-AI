@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useStore, Course } from "@/store/useStore";
-import Sidebar from "@/components/Sidebar";
+import { useStore } from "@/store/useStore";
 import { GraduationCap, Sparkles, ArrowRight, BookOpen, CheckCircle, Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -18,14 +17,14 @@ export default function CoursePage() {
             const res = await fetch("/api/course", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ notes })
+                body: JSON.stringify({ notes }),
             });
             const data = await res.json();
             if (data.success) {
                 addCourse({
                     ...data.course,
                     id: crypto.randomUUID(),
-                    createdAt: new Date().toISOString()
+                    createdAt: new Date().toISOString(),
                 });
             }
         } catch (err) {
@@ -48,7 +47,8 @@ export default function CoursePage() {
                     </div>
                     <h1 className="text-5xl font-black">Course Builder</h1>
                     <p className="text-slate-400 text-lg max-w-xl">
-                        We've analyzed your notes and can build a logical learning path for you to master any subject.
+                        We&apos;ve analyzed your notes and can build a logical learning path for you to
+                        master any subject.
                     </p>
                 </div>
                 <button
@@ -56,7 +56,11 @@ export default function CoursePage() {
                     disabled={isGenerating || notes.length === 0}
                     className="relative z-10 px-8 py-5 bg-indigo-600 hover:bg-indigo-500 rounded-2xl font-black transition-all shadow-2xl shadow-indigo-500/30 flex items-center gap-3 disabled:opacity-50"
                 >
-                    {isGenerating ? <Clock className="w-6 h-6 animate-spin" /> : <GraduationCap className="w-6 h-6" />}
+                    {isGenerating ? (
+                        <Clock className="w-6 h-6 animate-spin" />
+                    ) : (
+                        <GraduationCap className="w-6 h-6" />
+                    )}
                     Generate Academy
                 </button>
             </header>
@@ -67,7 +71,9 @@ export default function CoursePage() {
                         <BookOpen className="w-16 h-16 text-slate-700 mx-auto" />
                         <div className="space-y-2">
                             <h3 className="text-2xl font-bold text-slate-500">No courses yet</h3>
-                            <p className="text-slate-600">Click the button above to build your first learning path.</p>
+                            <p className="text-slate-600">
+                                Click the button above to build your first learning path.
+                            </p>
                         </div>
                     </div>
                 )}
@@ -75,17 +81,26 @@ export default function CoursePage() {
                 {isGenerating && (
                     <div className="py-20 text-center space-y-6">
                         <div className="w-20 h-20 border-8 border-indigo-500/10 border-t-indigo-500 rounded-full animate-spin mx-auto" />
-                        <p className="text-xl font-bold animate-pulse text-indigo-400">Architecting your custom curriculum...</p>
+                        <p className="text-xl font-bold animate-pulse text-indigo-400">
+                            Architecting your custom curriculum...
+                        </p>
                     </div>
                 )}
 
                 {courses.map((course) => (
-                    <section key={course.id} className="bg-slate-900/40 border border-white/5 rounded-[48px] overflow-hidden shadow-2xl animate-in slide-in-from-bottom-12 duration-700">
+                    <section
+                        key={course.id}
+                        className="bg-slate-900/40 border border-white/5 rounded-[48px] overflow-hidden shadow-2xl animate-in slide-in-from-bottom-12 duration-700"
+                    >
                         <div className="p-10 border-b border-white/5 bg-indigo-500/5">
                             <div className="flex items-center justify-between">
                                 <div className="space-y-2">
-                                    <h2 className="text-4xl font-black tracking-tight">{course.subject}</h2>
-                                    <p className="text-slate-400 font-medium">Curated Academy • {course.steps.length} Learning Modules</p>
+                                    <h2 className="text-4xl font-black tracking-tight">
+                                        {course.subject}
+                                    </h2>
+                                    <p className="text-slate-400 font-medium">
+                                        Curated Academy • {course.steps.length} Learning Modules
+                                    </p>
                                 </div>
                                 <div className="p-6 rounded-[32px] bg-white/5 border border-white/5">
                                     <CheckCircle className="w-10 h-10 text-emerald-500" />
@@ -108,13 +123,17 @@ export default function CoursePage() {
 
                                     <div className="space-y-4">
                                         <div className="space-y-1">
-                                            <h3 className="text-2xl font-bold group-hover:text-indigo-400 transition-colors">{step.title}</h3>
-                                            <p className="text-slate-400 leading-relaxed max-w-2xl">{step.description}</p>
+                                            <h3 className="text-2xl font-bold group-hover:text-indigo-400 transition-colors">
+                                                {step.title}
+                                            </h3>
+                                            <p className="text-slate-400 leading-relaxed max-w-2xl">
+                                                {step.description}
+                                            </p>
                                         </div>
 
                                         <div className="flex flex-wrap gap-3">
-                                            {step.noteIds.map(nid => {
-                                                const note = notes.find(n => n.id === nid);
+                                            {step.noteIds.map((nid) => {
+                                                const note = notes.find((n) => n.id === nid);
                                                 if (!note) return null;
                                                 return (
                                                     <div
@@ -135,7 +154,7 @@ export default function CoursePage() {
 
                         <div className="p-10 bg-black/20 flex justify-center">
                             <button
-                                onClick={() => router.push('/dashboard/study')}
+                                onClick={() => router.push("/dashboard/study")}
                                 className="px-12 py-5 bg-white text-black rounded-[24px] font-black text-lg hover:bg-slate-200 transition-all flex items-center gap-3"
                             >
                                 Start Learning Journey

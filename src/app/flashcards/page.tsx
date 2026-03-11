@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useStore } from "@/store/useStore";
 import {
     Brain,
@@ -20,7 +20,19 @@ export default function FlashcardsPage() {
     const [currentIdx, setCurrentIdx] = useState(0);
     const [showBack, setShowBack] = useState(false);
 
-    const dueCards = flashcards.filter((card) => card.nextReviewDate <= Date.now());
+    // Initialize with 0 and set on mount to avoid purity errors
+    const [now, setNow] = useState(0);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setNow(Date.now());
+    }, []);
+
+    const dueCards = useMemo(
+        () => (now === 0 ? [] : flashcards.filter((card) => card.nextReviewDate <= now)),
+        [flashcards, now]
+    );
+
     const currentCard = dueCards[currentIdx];
 
     const handleScore = (quality: number) => {
@@ -49,6 +61,8 @@ export default function FlashcardsPage() {
             setCurrentIdx(0);
         }
     };
+
+    if (now === 0) return null; // Wait for mount to avoid hydration mismatch and purity errors
 
     return (
         <div className="max-w-5xl mx-auto py-12 px-6 space-y-12">
@@ -126,10 +140,10 @@ export default function FlashcardsPage() {
                                                 Review In
                                             </p>
                                             <p className="text-xs font-black text-amber-500">
-                                                {card.nextReviewDate <= Date.now()
+                                                {card.nextReviewDate <= now
                                                     ? "Now"
                                                     : Math.ceil(
-                                                        (card.nextReviewDate - Date.now()) /
+                                                        (card.nextReviewDate - now) /
                                                         (24 * 3600 * 1000)
                                                     ) + " days"}
                                             </p>
@@ -195,7 +209,7 @@ export default function FlashcardsPage() {
                                     <Brain className="w-10 h-10" />
                                 </div>
                                 <h2 className="text-3xl font-black leading-tight text-white">
-                                    {currentCard.front}
+                                    {currentCard?.front}
                                 </h2>
                                 <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] animate-pulse">
                                     Click to Reveal Answer
@@ -210,7 +224,7 @@ export default function FlashcardsPage() {
                                         Answer
                                     </h3>
                                     <p className="text-3xl font-black text-white leading-tight">
-                                        {currentCard.back}
+                                        {currentCard?.back}
                                     </p>
                                 </div>
                             </div>
@@ -223,7 +237,11 @@ export default function FlashcardsPage() {
                                 { q: 1, label: "Forgot", color: "bg-red-500 shadow-red-500/20" },
                                 { q: 3, label: "Hard", color: "bg-orange-500 shadow-orange-500/20" },
                                 { q: 4, label: "Good", color: "bg-indigo-600 shadow-indigo-500/20" },
-                                { q: 5, label: "Easy", color: "bg-emerald-600 shadow-emerald-500/20" },
+                                {
+                                    q: 5,
+                                    label: "Easy",
+                                    color: "bg-emerald-600 shadow-emerald-500/20",
+                                },
                             ].map((btn) => (
                                 <button
                                     key={btn.q}

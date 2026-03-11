@@ -20,7 +20,8 @@ const serwist = new Serwist({
 });
 
 // 1. BACKGROUND SYNC (Standard API for PWA Builder)
-self.addEventListener("sync", (event: SyncEvent) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+self.addEventListener("sync", (event: any) => {
     if (event.tag === "sync-data") {
         console.log("Service Worker: Syncing data in background...");
         event.waitUntil(Promise.resolve());
@@ -28,9 +29,10 @@ self.addEventListener("sync", (event: SyncEvent) => {
 });
 
 // 2. PERIODIC BACKGROUND SYNC (Standard API for PWA Builder)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 self.addEventListener("periodicsync", (event: any) => {
     // PeriodicSyncEvent is not always available in libs, keeping any but scoped
-    if ((event as any).tag === "periodic-sync") {
+    if (event.tag === "periodic-sync") {
         console.log("Service Worker: Periodic background sync triggered.");
         event.waitUntil(
             fetch("/api/health") // Simple heart-beat check
@@ -44,6 +46,7 @@ self.addEventListener("periodicsync", (event: any) => {
 self.addEventListener("push", (event) => {
     console.log("Service Worker: Push message received.");
     const payload = event.data ? event.data.text() : "You have new AI note summaries ready!";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const options: any = {
         body: payload,
         icon: "/icon-192x192.png",

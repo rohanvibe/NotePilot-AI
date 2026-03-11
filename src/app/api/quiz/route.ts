@@ -5,10 +5,13 @@ export const maxDuration = 60;
 
 export async function POST(request: Request) {
     try {
-        const { text, type = 'mixed', count = 5 } = await request.json();
+        const { text, type = "mixed", count = 5 } = await request.json();
 
         if (!text) {
-            return NextResponse.json({ error: "No text provided for quiz generation" }, { status: 400 });
+            return NextResponse.json(
+                { error: "No text provided for quiz generation" },
+                { status: 400 }
+            );
         }
 
         const systemPrompt = `You are an AI Study Assistant. Generate a educational quiz based on the provided text.
@@ -23,12 +26,16 @@ export async function POST(request: Request) {
         Ensure it is valid JSON. No markdown formatting.`;
 
         const aiResponse = await generateContent(systemPrompt, text);
-        const cleanedResponse = aiResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
+        const cleanedResponse = aiResponse
+            .replace(/```json/gi, "")
+            .replace(/```/g, "")
+            .trim();
         const quiz = JSON.parse(cleanedResponse);
 
         return NextResponse.json({ success: true, quiz });
-    } catch (err: any) {
+    } catch (err) {
         console.error(err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        const errorMessage = err instanceof Error ? err.message : "Internal error";
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }

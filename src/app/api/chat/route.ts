@@ -3,14 +3,21 @@ import { generateContent } from "@/lib/sambanova";
 
 export const maxDuration = 60;
 
+interface ChatRequest {
+    context: string;
+    message: string;
+    history: { role: string; content: string }[];
+    notes: { id: string; name: string }[];
+}
+
 export async function POST(request: Request) {
     try {
-        const { context, message, history, notes } = await request.json();
+        const { context, message, history, notes } = (await request.json()) as ChatRequest;
 
         const systemPrompt = `You are a Retrieval-Augmented Generation (RAG) agent for the NotePilot AI application. 
         Your goal is to answer questions strictly based on the provided notes context.
         
-        Available Notes: ${JSON.stringify(notes.map((n: any) => ({ id: n.id, name: n.name })))}
+        Available Notes: ${JSON.stringify(notes.map((n) => ({ id: n.id, name: n.name })))}
         
         Rules:
         1. Cite the note name when referring to information.
@@ -22,7 +29,9 @@ export async function POST(request: Request) {
         
         SOURCES_USED: ["note-id-1", "note-id-2"]`;
 
-        const userMessage = `Context: ${context}\n\nHistory: ${JSON.stringify(history)}\n\nQuestion: ${message}`;
+        const userMessage = `Context: ${context}\n\nHistory: ${JSON.stringify(
+            history
+        )}\n\nQuestion: ${message}`;
 
         const aiResponse = await generateContent(systemPrompt, userMessage);
 
@@ -34,15 +43,16 @@ export async function POST(request: Request) {
         if (sourcesMatch) {
             try {
                 sources = JSON.parse(sourcesMatch[1]);
-                cleanReply = aiResponse.replace(/SOURCES_USED:\s*\[.*?\]/, '').trim();
+                cleanReply = aiResponse.replace(/SOURCES_USED:\s*\[.*?\]/, "").trim();
             } catch (e) {
                 console.error("Failed to parse sources", e);
             }
         }
 
         return NextResponse.json({ success: true, reply: cleanReply, sources });
-    } catch (err: any) {
+    } catch (err) {
         console.error(err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        const errorMessage = err instanceof Error ? err.message : "Internal error";
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }

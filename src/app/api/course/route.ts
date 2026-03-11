@@ -1,24 +1,25 @@
 import { NextResponse } from "next/server";
 import { generateContent } from "@/lib/sambanova";
+import { Note } from "@/store/useStore";
 
 export const maxDuration = 60;
 
 export async function POST(request: Request) {
-    try {
-        const { notes } = await request.json();
+  try {
+    const { notes } = (await request.json()) as { notes: Note[] };
 
-        if (!notes || notes.length === 0) {
-            return NextResponse.json({ error: "No notes provided" }, { status: 400 });
-        }
+    if (!notes || notes.length === 0) {
+      return NextResponse.json({ error: "No notes provided" }, { status: 400 });
+    }
 
-        const noteInfo = notes.map((n: any) => ({
-            id: n.id,
-            name: n.name,
-            topic: n.topic,
-            summary: n.summary
-        }));
+    const noteInfo = notes.map((n: Note) => ({
+      id: n.id,
+      name: n.name,
+      topic: n.topic,
+      summary: n.summary,
+    }));
 
-        const systemPrompt = `You are a Curriculum Architect. Organize the following notes into a structured learning course.
+    const systemPrompt = `You are a Curriculum Architect. Organize the following notes into a structured learning course.
         Identify the main subject and create a logical sequence of modules/steps.
         
         Return a strict JSON object:
@@ -35,13 +36,17 @@ export async function POST(request: Request) {
         }
         Ensure it is valid JSON. No markdown formatting.`;
 
-        const aiResponse = await generateContent(systemPrompt, JSON.stringify(noteInfo));
-        const cleanedResponse = aiResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
-        const course = JSON.parse(cleanedResponse);
+    const aiResponse = await generateContent(systemPrompt, JSON.stringify(noteInfo));
+    const cleanedResponse = aiResponse
+      .replace(/```json/gi, "")
+      .replace(/```/g, "")
+      .trim();
+    const course = JSON.parse(cleanedResponse);
 
-        return NextResponse.json({ success: true, course });
-    } catch (err: any) {
-        console.error(err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
-    }
+    return NextResponse.json({ success: true, course });
+  } catch (err) {
+    console.error(err);
+    const errorMessage = err instanceof Error ? err.message : "Internal error";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
+  }
 }

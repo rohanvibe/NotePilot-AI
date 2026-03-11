@@ -12,6 +12,12 @@ interface SearchResult {
     note: Note;
 }
 
+interface RawRanking {
+    id: string;
+    relevanceScore: number;
+    reason: string;
+}
+
 export default function SearchPage() {
     const { notes } = useStore();
     const [query, setQuery] = useState("");
@@ -33,11 +39,11 @@ export default function SearchPage() {
             const data = await res.json();
             if (data.success) {
                 const combined = data.rankings
-                    .map((r: any) => ({
+                    .map((r: RawRanking) => ({
                         ...r,
                         note: notes.find((n) => n.id === r.id),
                     }))
-                    .filter((r: any) => r.note) as SearchResult[];
+                    .filter((r: { note: Note | undefined }) => r.note) as SearchResult[];
                 setResults(combined);
             }
         } catch (err) {
