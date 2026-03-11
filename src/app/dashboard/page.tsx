@@ -61,8 +61,8 @@ export default function Dashboard() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ text: note.content }),
             });
-            const data = await res.json();
-            if (data.success) {
+            if (res.ok) {
+                const data = await res.json();
                 updateNote(note.id, { simplifiedContent: data.explanation });
             }
         } catch (err) {
@@ -84,8 +84,8 @@ export default function Dashboard() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ text, notesNames: topicNotes.map((n) => n.name) }),
             });
-            const data = await res.json();
-            if (data.success) {
+            if (res.ok) {
+                const data = await res.json();
                 setRevisionData({ topic, ...data.revision });
             }
         } catch (err) {
@@ -121,7 +121,7 @@ export default function Dashboard() {
             {/* Header & Search */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <header className="space-y-1">
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent">
+                    <h1 className="text-4xl font-bold bg-linear-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent">
                         Dashboard
                     </h1>
                     <p className="text-slate-500 font-medium">

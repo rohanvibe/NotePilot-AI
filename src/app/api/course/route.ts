@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { generateContent } from "@/lib/sambanova";
 import { Note } from "@/store/useStore";
+import { extractJSON } from "@/lib/utils";
 
 export const maxDuration = 60;
 
@@ -37,11 +38,7 @@ export async function POST(request: Request) {
         Ensure it is valid JSON. No markdown formatting.`;
 
     const aiResponse = await generateContent(systemPrompt, JSON.stringify(noteInfo));
-    const cleanedResponse = aiResponse
-      .replace(/```json/gi, "")
-      .replace(/```/g, "")
-      .trim();
-    const course = JSON.parse(cleanedResponse);
+    const course = extractJSON(aiResponse);
 
     return NextResponse.json({ success: true, course });
   } catch (err) {

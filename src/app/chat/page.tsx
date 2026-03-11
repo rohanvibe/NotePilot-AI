@@ -65,8 +65,12 @@ export default function Chat() {
                 }),
             });
 
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(`Chat error (${res.status}): ${text.slice(0, 50)}...`);
+            }
+
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Chat failed");
 
             setMessages((prev) => [
                 ...prev,
@@ -161,8 +165,8 @@ export default function Chat() {
                     >
                         <div
                             className={`shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ${msg.role === "ai"
-                                    ? "bg-indigo-600 shadow-indigo-500/20"
-                                    : "bg-white/5 border border-white/10"
+                                ? "bg-indigo-600 shadow-indigo-500/20"
+                                : "bg-white/5 border border-white/10"
                                 }`}
                         >
                             {msg.role === "ai" ? (
@@ -175,8 +179,8 @@ export default function Chat() {
                         <div className={`max-w-[85%] md:max-w-[70%] space-y-4`}>
                             <div
                                 className={`p-6 md:p-8 rounded-[32px] text-lg leading-relaxed ${msg.role === "user"
-                                        ? "bg-indigo-600/10 border border-indigo-500/20 text-indigo-100 rounded-tr-none"
-                                        : "bg-slate-900/60 border border-white/5 text-slate-200 rounded-tl-none"
+                                    ? "bg-indigo-600/10 border border-indigo-500/20 text-indigo-100 rounded-tr-none"
+                                    : "bg-slate-900/60 border border-white/5 text-slate-200 rounded-tl-none"
                                     }`}
                             >
                                 <div className="whitespace-pre-wrap">{msg.content}</div>

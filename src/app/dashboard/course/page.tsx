@@ -19,12 +19,12 @@ export default function CoursePage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ notes }),
             });
-            const data = await res.json();
-            if (data.success) {
+            if (res.ok) {
+                const data = await res.json();
                 addCourse({
                     ...data.course,
                     id: crypto.randomUUID(),
-                    createdAt: new Date().toISOString(),
+                    createdAt: Date.now(), // Fixed to number type as per store
                 });
             }
         } catch (err) {
@@ -113,7 +113,7 @@ export default function CoursePage() {
                                 <div key={step.id} className="relative pl-12 group">
                                     {/* Connector line */}
                                     {idx < course.steps.length - 1 && (
-                                        <div className="absolute left-[15px] top-10 bottom-[-40px] w-0.5 bg-gradient-to-b from-indigo-500 to-transparent opacity-20 group-hover:opacity-100 transition-opacity" />
+                                        <div className="absolute left-[15px] top-10 bottom-[-40px] w-0.5 bg-linear-to-b from-indigo-500 to-transparent opacity-20 group-hover:opacity-100 transition-opacity" />
                                     )}
 
                                     {/* Step indicator */}

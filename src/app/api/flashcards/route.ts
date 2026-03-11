@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { generateContent } from "@/lib/sambanova";
+import { extractJSON } from "@/lib/utils";
 
 export async function POST(request: Request) {
     try {
@@ -21,19 +22,14 @@ Output them strictly as a JSON array of objects with 'front' and 'back' properti
 
         const aiResponse = await generateContent(systemPrompt, instructions);
 
-        const cleanedResponse = aiResponse
-            .replace(/```json/gi, "")
-            .replace(/```/g, "")
-            .trim();
-
-        let flashcards;
+        let flashcards: unknown[];
         try {
-            flashcards = JSON.parse(cleanedResponse);
+            flashcards = extractJSON<unknown[]>(aiResponse);
         } catch {
-            console.error("Failed to parse flashcards JSON:", cleanedResponse);
+            console.error("Failed to parse flashcards JSON:", aiResponse);
             throw new Error(
                 "AI provided an invalid response instead of flashcards: " +
-                cleanedResponse.slice(0, 100) +
+                aiResponse.slice(0, 100) +
                 "..."
             );
         }

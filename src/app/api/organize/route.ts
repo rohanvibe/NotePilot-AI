@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { generateContent } from "@/lib/sambanova";
+import { extractJSON } from "@/lib/utils";
 
 export const maxDuration = 60;
 
@@ -35,11 +36,7 @@ export async function POST(request: Request) {
       systemPrompt,
       JSON.stringify(files.map((f) => ({ name: f.name, summary: f.content.slice(0, 500) })))
     );
-    const cleanedResponse = aiResponse
-      .replace(/```json/gi, "")
-      .replace(/```/g, "")
-      .trim();
-    const organization = JSON.parse(cleanedResponse);
+    const organization = extractJSON(aiResponse);
 
     return NextResponse.json({ success: true, organization });
   } catch (err) {

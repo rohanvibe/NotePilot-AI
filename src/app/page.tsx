@@ -82,8 +82,19 @@ export default function Landing() {
           body: formData,
         });
 
+        if (!res.ok) {
+          const text = await res.text();
+          let msg = "Failed to process files";
+          try {
+            const errData = JSON.parse(text);
+            msg = errData.error || msg;
+          } catch {
+            msg = `Server Error: ${res.status}`;
+          }
+          throw new Error(msg);
+        }
+
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Failed to process files");
         if (!data.notes) throw new Error("AI analysis did not return any usable notes.");
 
         const newNotes = data.notes.map((r: OrganizingResult) => ({
@@ -107,8 +118,9 @@ export default function Landing() {
             notesNames: newNotes.map((n: OrganizingResult) => n.name),
           }),
         });
-        const fData = await fRes.json();
-        if (fData.success) {
+
+        if (fRes.ok) {
+          const fData = await fRes.json();
           addFlashcards(
             fData.flashcards.map((f: RawFlashcard) => ({
               ...f,
@@ -195,7 +207,7 @@ export default function Landing() {
             </div>
             <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white">
               Messy Notes to{" "}
-              <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Genius.
               </span>
             </h1>
@@ -291,7 +303,7 @@ export default function Landing() {
                   <Sparkles className="w-4 h-4 text-purple-500" /> AI Insights
                 </h3>
                 <div className="p-6 rounded-2xl bg-white/5 border border-white/5">
-                  <p className="text-slate-400 text-sm italic italic">
+                  <p className="text-slate-400 text-sm italic">
                     &quot;{summary.topInsight}&quot;
                   </p>
                 </div>

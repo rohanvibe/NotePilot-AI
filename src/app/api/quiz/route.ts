@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { generateContent } from "@/lib/sambanova";
+import { extractJSON } from "@/lib/utils";
 
 export const maxDuration = 60;
 
@@ -20,17 +21,13 @@ export async function POST(request: Request) {
         - "question": "The question text"
         - "options": ["option A", "option B", "option C", "option D"] (only for multiple_choice)
         - "answer": "The correct answer"
-        - "explanation": "A brief explanation of为什么要这个答案"
+        - "explanation": "A brief explanation of why this is the answer"
         
         Generate exactly ${count} questions of type ${type}.
         Ensure it is valid JSON. No markdown formatting.`;
 
         const aiResponse = await generateContent(systemPrompt, text);
-        const cleanedResponse = aiResponse
-            .replace(/```json/gi, "")
-            .replace(/```/g, "")
-            .trim();
-        const quiz = JSON.parse(cleanedResponse);
+        const quiz = extractJSON(aiResponse);
 
         return NextResponse.json({ success: true, quiz });
     } catch (err) {

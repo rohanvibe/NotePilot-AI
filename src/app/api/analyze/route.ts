@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { extractJSON } from "@/lib/utils";
 
 // Polyfill for Vercel Serverless environment where pdf-parse dependencies are missing
 if (typeof globalThis.DOMMatrix === "undefined") {
@@ -86,11 +87,7 @@ Ensure it is valid JSON. Do not include markdown formatting or backticks around 
             const aiResponse = await generateContent(systemPrompt, text);
 
             try {
-                const cleanedResponse = aiResponse
-                    .replace(/```json/gi, "")
-                    .replace(/```/g, "")
-                    .trim();
-                const parsedAnalysis = JSON.parse(cleanedResponse);
+                const parsedAnalysis = extractJSON<Record<string, unknown>>(aiResponse);
                 results.push({
                     id: crypto.randomUUID(),
                     name: file.name,

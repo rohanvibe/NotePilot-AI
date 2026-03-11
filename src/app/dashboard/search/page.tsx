@@ -36,8 +36,8 @@ export default function SearchPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ query, notes }),
             });
-            const data = await res.json();
-            if (data.success) {
+            if (res.ok) {
+                const data = await res.json();
                 const combined = data.rankings
                     .map((r: RawRanking) => ({
                         ...r,
