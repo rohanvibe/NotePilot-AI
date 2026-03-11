@@ -2,15 +2,21 @@
 
 import { useState } from "react";
 import { useStore, Note } from "@/store/useStore";
-import Sidebar from "@/components/Sidebar";
 import { Search, Sparkles, ArrowRight, FileText, Hash } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+interface SearchResult {
+    id: string;
+    relevanceScore: number;
+    reason: string;
+    note: Note;
+}
 
 export default function SearchPage() {
     const { notes } = useStore();
     const [query, setQuery] = useState("");
     const [isSearching, setIsSearching] = useState(false);
-    const [results, setResults] = useState<any[]>([]);
+    const [results, setResults] = useState<SearchResult[]>([]);
     const router = useRouter();
 
     const handleSearch = async (e: React.FormEvent) => {
@@ -22,14 +28,16 @@ export default function SearchPage() {
             const res = await fetch("/api/search", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ query, notes })
+                body: JSON.stringify({ query, notes }),
             });
             const data = await res.json();
             if (data.success) {
-                const combined = data.rankings.map((r: any) => ({
-                    ...r,
-                    note: notes.find(n => n.id === r.id)
-                })).filter((r: any) => r.note);
+                const combined = data.rankings
+                    .map((r: any) => ({
+                        ...r,
+                        note: notes.find((n) => n.id === r.id),
+                    }))
+                    .filter((r: any) => r.note) as SearchResult[];
                 setResults(combined);
             }
         } catch (err) {
@@ -68,7 +76,11 @@ export default function SearchPage() {
                     disabled={isSearching}
                     className="absolute right-3 top-3 bottom-3 px-8 bg-blue-600 hover:bg-blue-500 rounded-2xl font-bold transition-all disabled:opacity-50 flex items-center gap-2"
                 >
-                    {isSearching ? <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <ArrowRight className="w-5 h-5" />}
+                    {isSearching ? (
+                        <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    ) : (
+                        <ArrowRight className="w-5 h-5" />
+                    )}
                     Search
                 </button>
             </form>
@@ -77,7 +89,9 @@ export default function SearchPage() {
                 {isSearching && (
                     <div className="py-20 text-center space-y-4">
                         <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mx-auto" />
-                        <p className="text-slate-500 font-medium animate-pulse">Analyzing conceptual relationships...</p>
+                        <p className="text-slate-500 font-medium animate-pulse">
+                            Analyzing conceptual relationships...
+                        </p>
                     </div>
                 )}
 
@@ -92,9 +106,12 @@ export default function SearchPage() {
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2 text-[10px] font-bold text-blue-400 uppercase tracking-widest">
-                                            <Hash className="w-3 h-3" /> {result.note.topic || 'Uncategorized'}
+                                            <Hash className="w-3 h-3" />{" "}
+                                            {result.note.topic || "Uncategorized"}
                                         </div>
-                                        <h3 className="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors">{result.note.name}</h3>
+                                        <h3 className="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors">
+                                            {result.note.name}
+                                        </h3>
                                     </div>
                                     <div className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-400 text-[10px] font-black uppercase tracking-tighter">
                                         {Math.round(result.relevanceScore * 100)}% Match
@@ -114,7 +131,9 @@ export default function SearchPage() {
 
                 {!isSearching && results.length === 0 && query && (
                     <div className="py-20 text-center border-2 border-dashed border-white/5 rounded-[40px]">
-                        <p className="text-slate-500">No deep conceptual matches found for &quot;{query}&quot;.</p>
+                        <p className="text-slate-500">
+                            No deep conceptual matches found for &quot;{query}&quot;.
+                        </p>
                     </div>
                 )}
             </div>

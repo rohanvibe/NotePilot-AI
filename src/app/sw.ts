@@ -20,8 +20,7 @@ const serwist = new Serwist({
 });
 
 // 1. BACKGROUND SYNC (Standard API for PWA Builder)
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-self.addEventListener("sync", (event: any) => {
+self.addEventListener("sync", (event: SyncEvent) => {
     if (event.tag === "sync-data") {
         console.log("Service Worker: Syncing data in background...");
         event.waitUntil(Promise.resolve());
@@ -29,9 +28,9 @@ self.addEventListener("sync", (event: any) => {
 });
 
 // 2. PERIODIC BACKGROUND SYNC (Standard API for PWA Builder)
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 self.addEventListener("periodicsync", (event: any) => {
-    if (event.tag === "periodic-sync") {
+    // PeriodicSyncEvent is not always available in libs, keeping any but scoped
+    if ((event as any).tag === "periodic-sync") {
         console.log("Service Worker: Periodic background sync triggered.");
         event.waitUntil(
             fetch("/api/health") // Simple heart-beat check
@@ -45,7 +44,7 @@ self.addEventListener("periodicsync", (event: any) => {
 self.addEventListener("push", (event) => {
     console.log("Service Worker: Push message received.");
     const payload = event.data ? event.data.text() : "You have new AI note summaries ready!";
-    const options = {
+    const options: any = {
         body: payload,
         icon: "/icon-192x192.png",
         badge: "/icon-192x192.png",
@@ -53,13 +52,11 @@ self.addEventListener("push", (event) => {
         data: {
             dateOfArrival: Date.now(),
             primaryKey: 1,
-            url: "/"
-        }
+            url: "/",
+        },
     };
 
-    event.waitUntil(
-        self.registration.showNotification("AI Notes Organizer", options)
-    );
+    event.waitUntil(self.registration.showNotification("NotePilot AI", options));
 });
 
 // Handle notification click
@@ -69,7 +66,8 @@ self.addEventListener("notificationclick", (event) => {
     event.waitUntil(
         self.clients.matchAll({ type: "window" }).then((clientList) => {
             for (const client of clientList) {
-                if (client.url === "/" && "focus" in client) return client.focus();
+                if (client.url === "/" && "focus" in client)
+                    return (client as WindowClient).focus();
             }
             if (self.clients.openWindow) return self.clients.openWindow("/");
         })

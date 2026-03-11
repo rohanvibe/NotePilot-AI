@@ -2,15 +2,37 @@
 
 import { useState } from "react";
 import { useStore, Note } from "@/store/useStore";
-import { Folder, Key, AlignLeft, Tags, Zap, BookOpen, GraduationCap, Search, Sparkles, Files, CheckCircle2, RefreshCw, XCircle, Calendar } from "lucide-react";
-import Sidebar from "@/components/Sidebar";
+import {
+    Folder,
+    Key,
+    AlignLeft,
+    Tags,
+    Zap,
+    BookOpen,
+    GraduationCap,
+    Search,
+    Sparkles,
+    Files,
+    CheckCircle2,
+    RefreshCw,
+    XCircle,
+    Calendar,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
+
+interface RevisionData {
+    topic: string;
+    summary: string;
+    examQuestions: string[];
+    formulas: string[];
+    studyPlan: string[];
+}
 
 export default function Dashboard() {
     const { notes, updateNote, flashcards } = useStore();
     const [simplifyingId, setSimplifyingId] = useState<string | null>(null);
     const [revisingTopic, setRevisingTopic] = useState<string | null>(null);
-    const [revisionData, setRevisionData] = useState<any>(null);
+    const [revisionData, setRevisionData] = useState<RevisionData | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const router = useRouter();
 
@@ -21,9 +43,14 @@ export default function Dashboard() {
         return acc;
     }, {} as Record<string, Note[]>);
 
-    const filteredNotes = Object.entries(groupedNotes).filter(([topic, topicNotes]) =>
-        topic.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        topicNotes.some(n => n.name.toLowerCase().includes(searchQuery.toLowerCase()) || n.content.toLowerCase().includes(searchQuery.toLowerCase()))
+    const filteredNotes = Object.entries(groupedNotes).filter(
+        ([topic, topicNotes]) =>
+            topic.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            topicNotes.some(
+                (n) =>
+                    n.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    n.content.toLowerCase().includes(searchQuery.toLowerCase())
+            )
     );
 
     const explainSimply = async (note: Note) => {
@@ -32,7 +59,7 @@ export default function Dashboard() {
             const res = await fetch("/api/explain-simply", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: note.content })
+                body: JSON.stringify({ text: note.content }),
             });
             const data = await res.json();
             if (data.success) {
@@ -48,11 +75,14 @@ export default function Dashboard() {
     const prepareForExam = async (topic: string, topicNotes: Note[]) => {
         setRevisingTopic(topic);
         try {
-            const text = topicNotes.map(n => n.content).join("\n\n").slice(0, 15000);
+            const text = topicNotes
+                .map((n) => n.content)
+                .join("\n\n")
+                .slice(0, 15000);
             const res = await fetch("/api/revision", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text, notesNames: topicNotes.map(n => n.name) })
+                body: JSON.stringify({ text, notesNames: topicNotes.map((n) => n.name) }),
             });
             const data = await res.json();
             if (data.success) {
@@ -72,7 +102,8 @@ export default function Dashboard() {
                     <Folder className="w-16 h-16 text-indigo-500 mb-4 mx-auto" />
                     <h2 className="text-3xl font-bold text-center">Your brain is empty</h2>
                     <p className="text-slate-400 text-center max-w-sm mt-2">
-                        Go to the Upload section and drop some messy notes to start building your second brain.
+                        Go to the Upload section and drop some messy notes to start building
+                        your second brain.
                     </p>
                     <button
                         onClick={() => router.push("/")}
@@ -93,7 +124,9 @@ export default function Dashboard() {
                     <h1 className="text-4xl font-bold bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent">
                         Dashboard
                     </h1>
-                    <p className="text-slate-500 font-medium">Managing your digital knowledge base</p>
+                    <p className="text-slate-500 font-medium">
+                        Managing your digital knowledge base
+                    </p>
                 </header>
 
                 <div className="relative group max-w-md w-full">
@@ -123,15 +156,36 @@ export default function Dashboard() {
                         </div>
                         <h2 className="text-3xl font-bold">Chaos to Knowledge</h2>
                         <p className="text-slate-400 leading-relaxed">
-                            Our AI has restructured your messy files into a structured learning environment.
+                            Our AI has restructured your messy files into a structured learning
+                            environment.
                         </p>
                     </div>
 
                     <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-                        <StatCard icon={<Files className="w-4 h-4" />} label="Files" value={notes.length} color="blue" />
-                        <StatCard icon={<Tags className="w-4 h-4" />} label="Topics" value={Object.keys(groupedNotes).length} color="purple" />
-                        <StatCard icon={<Zap className="w-4 h-4" />} label="Cards" value={flashcards.length} color="amber" />
-                        <StatCard icon={<GraduationCap className="w-4 h-4" />} label="Mastery" value={Math.min(100, notes.length * 5)} color="emerald" />
+                        <StatCard
+                            icon={<Files className="w-4 h-4" />}
+                            label="Files"
+                            value={notes.length}
+                            color="blue"
+                        />
+                        <StatCard
+                            icon={<Tags className="w-4 h-4" />}
+                            label="Topics"
+                            value={Object.keys(groupedNotes).length}
+                            color="purple"
+                        />
+                        <StatCard
+                            icon={<Zap className="w-4 h-4" />}
+                            label="Cards"
+                            value={flashcards.length}
+                            color="amber"
+                        />
+                        <StatCard
+                            icon={<GraduationCap className="w-4 h-4" />}
+                            label="Mastery"
+                            value={Math.min(100, notes.length * 5)}
+                            color="emerald"
+                        />
                     </div>
                 </div>
             </section>
@@ -145,9 +199,13 @@ export default function Dashboard() {
                                 <div className="p-4 rounded-3xl bg-indigo-500/10 text-indigo-400">
                                     <Folder className="w-8 h-8" />
                                 </div>
-                                <div>
-                                    <h2 className="text-2xl font-bold text-white uppercase tracking-tight">{topic}</h2>
-                                    <p className="text-slate-500 text-sm font-medium">{topicNotes.length} source files</p>
+                                <div className="space-y-1">
+                                    <h2 className="text-2xl font-bold text-white uppercase tracking-tight">
+                                        {topic}
+                                    </h2>
+                                    <p className="text-slate-500 text-sm font-medium">
+                                        {topicNotes.length} source files
+                                    </p>
                                 </div>
                             </div>
 
@@ -156,35 +214,51 @@ export default function Dashboard() {
                                 disabled={revisingTopic === topic}
                                 className="hidden md:flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl font-bold text-sm transition-all"
                             >
-                                {revisingTopic === topic ? <RefreshCw className="w-4 h-4 animate-spin" /> : <GraduationCap className="w-4 h-4" />}
+                                {revisingTopic === topic ? (
+                                    <RefreshCw className="w-4 h-4 animate-spin" />
+                                ) : (
+                                    <GraduationCap className="w-4 h-4" />
+                                )}
                                 Prepare for Exam
                             </button>
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {topicNotes.map((note) => (
-                                <div key={note.id} className="group bg-slate-900/40 border border-white/5 hover:border-indigo-500/30 rounded-[32px] p-8 transition-all hover:bg-slate-900/60 shadow-xl space-y-8">
+                                <div
+                                    key={note.id}
+                                    className="group bg-slate-900/40 border border-white/5 hover:border-indigo-500/30 rounded-[32px] p-8 transition-all hover:bg-slate-900/60 shadow-xl space-y-8"
+                                >
                                     <div className="flex items-start justify-between">
                                         <div className="space-y-1">
-                                            <h3 className="text-2xl font-bold text-white group-hover:text-indigo-400 transition-colors leading-tight">{note.name}</h3>
-                                            <p className="text-xs text-slate-500 font-mono">{new Date(note.createdAt).toLocaleDateString()}</p>
+                                            <h3 className="text-2xl font-bold text-white group-hover:text-indigo-400 transition-colors leading-tight">
+                                                {note.name}
+                                            </h3>
+                                            <p className="text-xs text-slate-500 font-mono">
+                                                {new Date(note.createdAt).toLocaleDateString()}
+                                            </p>
                                         </div>
                                         <button
                                             onClick={() => explainSimply(note)}
                                             disabled={simplifyingId === note.id}
                                             className="p-3 rounded-2xl bg-white/5 hover:bg-indigo-500/20 text-slate-400 hover:text-indigo-400 transition-all border border-transparent hover:border-indigo-500/30"
                                         >
-                                            {simplifyingId === note.id ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Zap className="w-5 h-5" />}
+                                            {simplifyingId === note.id ? (
+                                                <RefreshCw className="w-5 h-5 animate-spin" />
+                                            ) : (
+                                                <Zap className="w-5 h-5" />
+                                            )}
                                         </button>
                                     </div>
 
                                     {note.summary && (
                                         <div className="space-y-3">
                                             <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                                <AlignLeft className="w-3 h-3 text-indigo-500" /> Summary
+                                                <AlignLeft className="w-3 h-3 text-indigo-500" />{" "}
+                                                Summary
                                             </div>
                                             <p className="text-slate-300 text-sm leading-relaxed bg-black/40 p-5 rounded-2xl border border-white/5 italic">
-                                                "{note.summary}"
+                                                &quot;{note.summary}&quot;
                                             </p>
                                         </div>
                                     )}
@@ -197,7 +271,10 @@ export default function Dashboard() {
                                                 </div>
                                                 <ul className="space-y-3">
                                                     {note.keyPoints.slice(0, 3).map((kp, i) => (
-                                                        <li key={i} className="text-sm text-slate-400 flex items-start gap-3">
+                                                        <li
+                                                            key={i}
+                                                            className="text-sm text-slate-400 flex items-start gap-3"
+                                                        >
                                                             <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 shrink-0" />
                                                             <span className="line-clamp-2">{kp}</span>
                                                         </li>
@@ -213,7 +290,10 @@ export default function Dashboard() {
                                                 </div>
                                                 <div className="flex flex-wrap gap-2">
                                                     {note.importantTerms.slice(0, 4).map((term, i) => (
-                                                        <span key={i} className="text-[10px] font-bold bg-white/5 text-slate-300 border border-white/10 px-3 py-1.5 rounded-lg">
+                                                        <span
+                                                            key={i}
+                                                            className="text-[10px] font-bold bg-white/5 text-slate-300 border border-white/10 px-3 py-1.5 rounded-lg"
+                                                        >
                                                             #{term}
                                                         </span>
                                                     ))}
@@ -228,7 +308,9 @@ export default function Dashboard() {
                                                 <Sparkles className="w-4 h-4" /> Simplified
                                             </div>
                                             <div className="text-slate-300 text-sm leading-relaxed">
-                                                <p className="whitespace-pre-wrap">{note.simplifiedContent}</p>
+                                                <p className="whitespace-pre-wrap">
+                                                    {note.simplifiedContent}
+                                                </p>
                                             </div>
                                         </div>
                                     )}
@@ -256,7 +338,9 @@ export default function Dashboard() {
                                     <GraduationCap className="w-4 h-4" />
                                     Revision Guide
                                 </div>
-                                <h2 className="text-5xl font-black text-white">{revisionData.topic} Mastery</h2>
+                                <h2 className="text-5xl font-black text-white">
+                                    {revisionData.topic} Mastery
+                                </h2>
                             </header>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -275,7 +359,10 @@ export default function Dashboard() {
                                         </h3>
                                         <div className="space-y-3">
                                             {revisionData.examQuestions.map((q: string, i: number) => (
-                                                <div key={i} className="p-4 rounded-2xl bg-purple-500/5 border border-purple-500/20 text-slate-200">
+                                                <div
+                                                    key={i}
+                                                    className="p-4 rounded-2xl bg-purple-500/5 border border-purple-500/20 text-slate-200"
+                                                >
                                                     {q}
                                                 </div>
                                             ))}
@@ -289,7 +376,10 @@ export default function Dashboard() {
                                         </h3>
                                         <div className="space-y-3">
                                             {revisionData.formulas.map((f: string, i: number) => (
-                                                <div key={i} className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 font-mono text-emerald-300 text-sm">
+                                                <div
+                                                    key={i}
+                                                    className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 font-mono text-emerald-300 text-sm"
+                                                >
                                                     {f}
                                                 </div>
                                             ))}
@@ -314,7 +404,7 @@ export default function Dashboard() {
                             </div>
 
                             <button
-                                onClick={() => router.push('/dashboard/study')}
+                                onClick={() => router.push("/dashboard/study")}
                                 className="w-full py-6 bg-indigo-600 hover:bg-indigo-500 rounded-[28px] text-xl font-black text-white transition-all shadow-2xl shadow-indigo-500/30"
                             >
                                 Start Practice Quiz
@@ -327,19 +417,31 @@ export default function Dashboard() {
     );
 }
 
-function StatCard({ icon, label, value, color }: { icon: React.ReactNode, label: string, value: number, color: string }) {
-    const colors: any = {
+function StatCard({
+    icon,
+    label,
+    value,
+    color,
+}: {
+    icon: React.ReactNode;
+    label: string;
+    value: number;
+    color: string;
+}) {
+    const colors: Record<string, string> = {
         blue: "bg-blue-500/10 text-blue-400 border-blue-500/20",
         purple: "bg-purple-500/10 text-purple-400 border-purple-500/20",
         amber: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-        emerald: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+        emerald: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
     };
 
     return (
         <div className={`p-6 rounded-3xl border ${colors[color]} backdrop-blur-md`}>
             <div className="flex items-center gap-2 mb-3 opacity-60">
                 {icon}
-                <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
+                <span className="text-[10px] font-black uppercase tracking-widest">
+                    {label}
+                </span>
             </div>
             <p className="text-3xl font-black tracking-tighter">{value}</p>
         </div>

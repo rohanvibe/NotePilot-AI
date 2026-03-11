@@ -1,20 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { useStore, Flashcard } from "@/store/useStore";
-import { Brain, Layers, RefreshCw, CheckCircle, Sparkles, AlertCircle, Bookmark, ChevronLeft, ChevronRight, GraduationCap, XCircle } from "lucide-react";
+import { useStore } from "@/store/useStore";
+import {
+    Brain,
+    Layers,
+    CheckCircle,
+    Sparkles,
+    Bookmark,
+    ChevronRight,
+    GraduationCap,
+    XCircle,
+} from "lucide-react";
 import { calculateNextReview } from "@/lib/spacedRepetition";
-import { useRouter } from "next/navigation";
 
 export default function FlashcardsPage() {
     const { flashcards, updateFlashcard, notes } = useStore();
     const [isStudying, setIsStudying] = useState(false);
     const [currentIdx, setCurrentIdx] = useState(0);
     const [showBack, setShowBack] = useState(false);
-    const router = useRouter();
 
-    const dueCards = flashcards.filter(card => card.nextReviewDate <= Date.now());
-    const upcomingCards = flashcards.filter(card => card.nextReviewDate > Date.now());
+    const dueCards = flashcards.filter((card) => card.nextReviewDate <= Date.now());
     const currentCard = dueCards[currentIdx];
 
     const handleScore = (quality: number) => {
@@ -32,11 +38,11 @@ export default function FlashcardsPage() {
             ease,
             reviewCount,
             nextReviewDate,
-            difficulty: quality < 3 ? 'hard' : (quality < 5 ? 'medium' : 'easy')
+            difficulty: quality < 3 ? "hard" : quality < 5 ? "medium" : "easy",
         });
 
         if (currentIdx < dueCards.length - 1) {
-            setCurrentIdx(prev => prev + 1);
+            setCurrentIdx((prev) => prev + 1);
             setShowBack(false);
         } else {
             setIsStudying(false);
@@ -51,7 +57,9 @@ export default function FlashcardsPage() {
                     <h1 className="text-4xl font-black bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
                         Memory Engine
                     </h1>
-                    <p className="text-slate-500 font-medium tracking-tight">Active recall via Spaced Repetition (SM-2)</p>
+                    <p className="text-slate-500 font-medium tracking-tight">
+                        Active recall via Spaced Repetition (SM-2)
+                    </p>
                 </div>
                 {!isStudying && dueCards.length > 0 && (
                     <button
@@ -80,31 +88,50 @@ export default function FlashcardsPage() {
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="p-6 rounded-3xl bg-green-500/5 border border-green-500/10">
-                                    <p className="text-xs font-bold text-green-500 uppercase tracking-widest mb-1">Mastered</p>
-                                    <p className="text-3xl font-black">{flashcards.filter(c => c.difficulty === 'easy').length}</p>
+                                    <p className="text-xs font-bold text-green-500 uppercase tracking-widest mb-1">
+                                        Mastered
+                                    </p>
+                                    <p className="text-3xl font-black">
+                                        {flashcards.filter((c) => c.difficulty === "easy").length}
+                                    </p>
                                 </div>
                                 <div className="p-6 rounded-3xl bg-orange-500/5 border border-orange-500/10">
-                                    <p className="text-xs font-bold text-orange-500 uppercase tracking-widest mb-1">Due Now</p>
+                                    <p className="text-xs font-bold text-orange-500 uppercase tracking-widest mb-1">
+                                        Due Now
+                                    </p>
                                     <p className="text-3xl font-black font-mono">{dueCards.length}</p>
                                 </div>
                             </div>
                         </section>
 
                         <div className="grid grid-cols-1 gap-4">
-                            {flashcards.slice(0, 5).map(card => {
-                                const note = notes.find(n => n.id === card.noteId);
+                            {flashcards.slice(0, 5).map((card) => {
+                                const note = notes.find((n) => n.id === card.noteId);
                                 return (
-                                    <div key={card.id} className="p-6 rounded-3xl bg-white/5 border border-white/5 flex items-center justify-between group hover:bg-white/10 transition-all cursor-default">
+                                    <div
+                                        key={card.id}
+                                        className="p-6 rounded-3xl bg-white/5 border border-white/5 flex items-center justify-between group hover:bg-white/10 transition-all cursor-default"
+                                    >
                                         <div className="space-y-1">
-                                            <p className="font-bold text-slate-200 line-clamp-1">{card.front}</p>
+                                            <p className="font-bold text-slate-200 line-clamp-1">
+                                                {card.front}
+                                            </p>
                                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1">
-                                                <Bookmark className="w-3 h-3" /> {note?.name || 'General Knowledge'}
+                                                <Bookmark className="w-3 h-3" />{" "}
+                                                {note?.name || "General Knowledge"}
                                             </p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-[10px] font-bold text-slate-500 uppercase">Review In</p>
+                                            <p className="text-[10px] font-bold text-slate-500 uppercase">
+                                                Review In
+                                            </p>
                                             <p className="text-xs font-black text-amber-500">
-                                                {card.nextReviewDate <= Date.now() ? 'Now' : Math.ceil((card.nextReviewDate - Date.now()) / (24 * 3600 * 1000)) + ' days'}
+                                                {card.nextReviewDate <= Date.now()
+                                                    ? "Now"
+                                                    : Math.ceil(
+                                                        (card.nextReviewDate - Date.now()) /
+                                                        (24 * 3600 * 1000)
+                                                    ) + " days"}
                                             </p>
                                         </div>
                                     </div>
@@ -118,7 +145,8 @@ export default function FlashcardsPage() {
                             <Sparkles className="w-10 h-10 text-indigo-400" />
                             <h3 className="text-xl font-bold">Smart Insights</h3>
                             <p className="text-slate-400 text-sm leading-relaxed">
-                                Our SM-2 algorithm prioritizes cards you find difficult, ensuring zero-waste studying.
+                                Our SM-2 algorithm prioritizes cards you find difficult, ensuring
+                                zero-waste studying.
                             </p>
                             <div className="pt-4">
                                 <button className="text-indigo-400 font-bold text-xs uppercase tracking-widest border-b border-indigo-500/30 pb-1">
@@ -129,7 +157,9 @@ export default function FlashcardsPage() {
 
                         <div className="p-8 bg-white/5 rounded-[40px] border border-white/10 flex flex-col items-center text-center space-y-4">
                             <GraduationCap className="w-12 h-12 text-slate-700" />
-                            <p className="text-slate-500 font-medium text-sm">Consistent daily review increases retention by up to 80%.</p>
+                            <p className="text-slate-500 font-medium text-sm">
+                                Consistent daily review increases retention by up to 80%.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -143,8 +173,12 @@ export default function FlashcardsPage() {
                             <XCircle className="w-6 h-6" />
                         </button>
                         <div className="text-center">
-                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Progress</p>
-                            <p className="text-sm font-black">{currentIdx + 1} / {dueCards.length}</p>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                Progress
+                            </p>
+                            <p className="text-sm font-black">
+                                {currentIdx + 1} / {dueCards.length}
+                            </p>
                         </div>
                         <div className="w-12 h-12" /> {/* Spacer */}
                     </div>
@@ -152,23 +186,32 @@ export default function FlashcardsPage() {
                     <div className="group perspective h-[450px]">
                         <div
                             onClick={() => setShowBack(!showBack)}
-                            className={`relative w-full h-full duration-700 preserve-3d cursor-pointer ${showBack ? 'rotate-y-180' : ''}`}
+                            className={`relative w-full h-full duration-700 preserve-3d cursor-pointer ${showBack ? "rotate-y-180" : ""
+                                }`}
                         >
                             {/* Front */}
                             <div className="absolute inset-0 backface-hidden bg-slate-900 border-2 border-orange-500/20 rounded-[48px] p-12 flex flex-col items-center justify-center text-center space-y-8 shadow-2xl">
                                 <div className="p-4 rounded-3xl bg-orange-500/10 text-orange-500">
                                     <Brain className="w-10 h-10" />
                                 </div>
-                                <h2 className="text-3xl font-black leading-tight text-white">{currentCard.front}</h2>
-                                <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] animate-pulse">Click to Reveal Answer</p>
+                                <h2 className="text-3xl font-black leading-tight text-white">
+                                    {currentCard.front}
+                                </h2>
+                                <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] animate-pulse">
+                                    Click to Reveal Answer
+                                </p>
                             </div>
 
                             {/* Back */}
                             <div className="absolute inset-0 backface-hidden rotate-y-180 bg-orange-600 rounded-[48px] p-12 flex flex-col items-center justify-center text-center space-y-8 shadow-2xl shadow-orange-500/40">
                                 <CheckCircle className="w-16 h-16 text-white/50" />
                                 <div className="space-y-4">
-                                    <h3 className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Answer</h3>
-                                    <p className="text-3xl font-black text-white leading-tight">{currentCard.back}</p>
+                                    <h3 className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
+                                        Answer
+                                    </h3>
+                                    <p className="text-3xl font-black text-white leading-tight">
+                                        {currentCard.back}
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -177,17 +220,19 @@ export default function FlashcardsPage() {
                     {showBack ? (
                         <div className="grid grid-cols-4 gap-3 animate-in slide-in-from-bottom-4 duration-300">
                             {[
-                                { q: 1, label: 'Forgot', color: 'bg-red-500 shadow-red-500/20' },
-                                { q: 3, label: 'Hard', color: 'bg-orange-500 shadow-orange-500/20' },
-                                { q: 4, label: 'Good', color: 'bg-indigo-600 shadow-indigo-500/20' },
-                                { q: 5, label: 'Easy', color: 'bg-emerald-600 shadow-emerald-500/20' }
-                            ].map(btn => (
+                                { q: 1, label: "Forgot", color: "bg-red-500 shadow-red-500/20" },
+                                { q: 3, label: "Hard", color: "bg-orange-500 shadow-orange-500/20" },
+                                { q: 4, label: "Good", color: "bg-indigo-600 shadow-indigo-500/20" },
+                                { q: 5, label: "Easy", color: "bg-emerald-600 shadow-emerald-500/20" },
+                            ].map((btn) => (
                                 <button
                                     key={btn.q}
                                     onClick={() => handleScore(btn.q)}
                                     className={`py-6 rounded-3xl text-white font-black text-lg transition-all hover:scale-105 active:scale-95 shadow-xl ${btn.color}`}
                                 >
-                                    <span className="block text-[10px] opacity-60 uppercase mb-1">{btn.label}</span>
+                                    <span className="block text-[10px] opacity-60 uppercase mb-1">
+                                        {btn.label}
+                                    </span>
                                     {btn.q}
                                 </button>
                             ))}

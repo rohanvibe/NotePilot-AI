@@ -2,8 +2,31 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { UploadCloud, FolderUp, Loader2, Sparkles, AlertCircle, CheckCircle2, ArrowRight, ShieldCheck, X } from "lucide-react";
+import {
+  UploadCloud,
+  Loader2,
+  Sparkles,
+  AlertCircle,
+  CheckCircle2,
+  ArrowRight,
+  ShieldCheck,
+  X,
+} from "lucide-react";
 import { useStore } from "@/store/useStore";
+
+interface OrganizingResult {
+  name: string;
+  content: string;
+  topic: string;
+  summary: string;
+  keyPoints: string[];
+  importantTerms: string[];
+}
+
+interface SummaryResult {
+  impact: string;
+  topInsight: string;
+}
 
 export default function Landing() {
   const { addNotes, addFlashcards, notes } = useStore();
@@ -12,7 +35,7 @@ export default function Landing() {
   const [error, setError] = useState<string | null>(null);
   const [showPermission, setShowPermission] = useState(false);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
-  const [summary, setSummary] = useState<any>(null);
+  const [summary, setSummary] = useState<SummaryResult | null>(null);
 
   const processFiles = async (files: File[]) => {
     setIsUploading(true);
@@ -30,14 +53,14 @@ export default function Landing() {
       const res = await fetch("/api/organize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ files: notesData })
+        body: JSON.stringify({ files: notesData }),
       });
 
       const data = await res.json();
       if (!data.success) throw new Error(data.error);
 
       // Update store
-      const newNotes = data.results.map((r: any) => ({
+      const newNotes = data.results.map((r: OrganizingResult) => ({
         id: crypto.randomUUID(),
         name: r.name,
         content: r.content,
@@ -45,7 +68,7 @@ export default function Landing() {
         summary: r.summary,
         keyPoints: r.keyPoints,
         importantTerms: r.importantTerms,
-        createdAt: Date.now()
+        createdAt: Date.now(),
       }));
 
       addNotes(newNotes);
@@ -54,24 +77,30 @@ export default function Landing() {
       const fRes = await fetch("/api/flashcards", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notes: newNotes })
+        body: JSON.stringify({ notes: newNotes }),
       });
       const fData = await fRes.json();
       if (fData.success) {
-        addFlashcards(fData.flashcards.map((f: any) => ({
-          ...f,
-          id: crypto.randomUUID(),
-          nextReviewDate: Date.now(),
-          difficulty: 'new',
-          interval: 0,
-          ease: 2.5,
-          reviewCount: 0
-        })));
+        addFlashcards(
+          fData.flashcards.map((f: any) => ({
+            ...f,
+            id: crypto.randomUUID(),
+            nextReviewDate: Date.now(),
+            difficulty: "new",
+            interval: 0,
+            ease: 2.5,
+            reviewCount: 0,
+          }))
+        );
       }
 
       setSummary(data.summary);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred during processing.");
+      }
     } finally {
       setIsUploading(false);
     }
@@ -79,7 +108,10 @@ export default function Landing() {
 
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
-    const files = Array.from(e.dataTransfer.files).filter(f => f.type === "text/plain" || f.name.endsWith(".md") || f.name.endsWith(".txt"));
+    const files = Array.from(e.dataTransfer.files).filter(
+      (f) =>
+        f.type === "text/plain" || f.name.endsWith(".md") || f.name.endsWith(".txt")
+    );
     if (files.length > 0) {
       setPendingFiles(files);
       setShowPermission(true);
@@ -96,10 +128,14 @@ export default function Landing() {
               AI Powered v2.0
             </div>
             <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white">
-              Messy Notes to <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Genius.</span>
+              Messy Notes to{" "}
+              <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Genius.
+              </span>
             </h1>
             <p className="text-slate-500 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
-              Upload your unstructured text files. Our AI will categorize, summarize, and build a knowledge graph for you.
+              Upload your unstructured text files. Our AI will categorize,
+              summarize, and build a knowledge graph for you.
             </p>
           </div>
 
@@ -110,11 +146,19 @@ export default function Landing() {
           >
             <div className="absolute inset-0 bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="p-8 rounded-[32px] bg-indigo-500/10 text-indigo-400 group-hover:scale-110 transition-transform duration-500">
-              {isUploading ? <Loader2 className="w-12 h-12 animate-spin" /> : <UploadCloud className="w-12 h-12" />}
+              {isUploading ? (
+                <Loader2 className="w-12 h-12 animate-spin" />
+              ) : (
+                <UploadCloud className="w-12 h-12" />
+              )}
             </div>
             <div className="space-y-2 relative z-10">
-              <p className="text-2xl font-black">{isUploading ? 'Processing Brain...' : 'Drop your chaos here'}</p>
-              <p className="text-slate-500 font-bold text-sm tracking-tight uppercase">Supports .txt and .md files</p>
+              <p className="text-2xl font-black">
+                {isUploading ? "Processing Brain..." : "Drop your chaos here"}
+              </p>
+              <p className="text-slate-500 font-bold text-sm tracking-tight uppercase">
+                Supports .txt and .md files
+              </p>
             </div>
             <input
               type="file"
@@ -154,14 +198,17 @@ export default function Landing() {
               <CheckCircle2 className="w-12 h-12" />
             </div>
             <h2 className="text-5xl font-black">Knowledge Synthesized</h2>
-            <p className="text-slate-400 text-lg font-medium">Behold the impact of AI organization on your messy notes.</p>
+            <p className="text-slate-400 text-lg font-medium">
+              Behold the impact of AI organization on your messy notes.
+            </p>
           </div>
 
           <div className="bg-slate-900 border border-white/5 rounded-[48px] p-10 space-y-10 shadow-3xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <section className="space-y-4">
                 <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-500" /> Structure Evolution
+                  <ShieldCheck className="w-4 h-4 text-emerald-500" />{" "}
+                  Structure Evolution
                 </h3>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center text-sm font-bold">
@@ -171,7 +218,9 @@ export default function Landing() {
                   <div className="h-3 bg-white/5 rounded-full overflow-hidden flex">
                     <div className="h-full bg-indigo-500 w-[70%]" />
                   </div>
-                  <p className="text-slate-300 text-sm leading-relaxed">{summary.impact}</p>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    {summary.impact}
+                  </p>
                 </div>
               </section>
 
@@ -180,7 +229,9 @@ export default function Landing() {
                   <Sparkles className="w-4 h-4 text-purple-500" /> AI Insights
                 </h3>
                 <div className="p-6 rounded-2xl bg-white/5 border border-white/5">
-                  <p className="text-slate-400 text-sm italic italic">&quot;{summary.topInsight}&quot;</p>
+                  <p className="text-slate-400 text-sm italic italic">
+                    &quot;{summary.topInsight}&quot;
+                  </p>
                 </div>
               </section>
             </div>
@@ -200,19 +251,31 @@ export default function Landing() {
       {showPermission && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
           <div className="bg-[#0a0a0b] border border-white/10 w-full max-w-lg rounded-[48px] p-10 space-y-8 animate-in zoom-in duration-300 relative">
-            <button onClick={() => setShowPermission(false)} className="absolute top-8 right-8 text-slate-500 hover:text-white">
+            <button
+              onClick={() => setShowPermission(false)}
+              className="absolute top-8 right-8 text-slate-500 hover:text-white"
+            >
               <X className="w-6 h-6" />
             </button>
             <div className="w-20 h-20 rounded-3xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-4">
               <ShieldCheck className="w-10 h-10" />
             </div>
             <div className="space-y-2">
-              <h2 className="text-3xl font-black text-white leading-tight">AI Folder Intelligence</h2>
-              <p className="text-slate-500 font-medium">NotePilot wants to rename and categorize your {pendingFiles.length} files to create a logical knowledge structure.</p>
+              <h2 className="text-3xl font-black text-white leading-tight">
+                AI Folder Intelligence
+              </h2>
+              <p className="text-slate-500 font-medium">
+                NotePilot wants to rename and categorize your{" "}
+                {pendingFiles.length} files to create a logical knowledge
+                structure.
+              </p>
             </div>
             <div className="flex flex-col gap-3">
               <button
-                onClick={() => { setShowPermission(false); processFiles(pendingFiles); }}
+                onClick={() => {
+                  setShowPermission(false);
+                  processFiles(pendingFiles);
+                }}
                 className="w-full py-5 bg-indigo-600 hover:bg-indigo-500 rounded-2xl font-black text-white transition-all"
               >
                 Grant AI Permissions

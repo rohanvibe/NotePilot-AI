@@ -1,8 +1,17 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useStore, Note } from "@/store/useStore";
-import { MessageSquare, Send, Bot, User, Sparkles, FileText, ExternalLink, RefreshCw } from "lucide-react";
+import { useStore } from "@/store/useStore";
+import {
+    MessageSquare,
+    Send,
+    Bot,
+    User,
+    Sparkles,
+    FileText,
+    ExternalLink,
+    RefreshCw,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface Message {
@@ -37,8 +46,13 @@ export default function Chat() {
         setIsTyping(true);
 
         try {
-            const allContext = notes.map((n) => `--- NOTE: ${n.name} ---\n${n.content}`).join("\n\n").slice(0, 40000);
-            const history = messages.slice(-5).map(m => ({ role: m.role, content: m.content }));
+            const allContext = notes
+                .map((n) => `--- NOTE: ${n.name} ---\n${n.content}`)
+                .join("\n\n")
+                .slice(0, 40000);
+            const history = messages
+                .slice(-5)
+                .map((m) => ({ role: m.role, content: m.content }));
 
             const res = await fetch("/api/chat", {
                 method: "POST",
@@ -47,20 +61,27 @@ export default function Chat() {
                     context: allContext,
                     message: userMessage.content,
                     history,
-                    notes: notes.map(n => ({ id: n.id, name: n.name }))
+                    notes: notes.map((n) => ({ id: n.id, name: n.name })),
                 }),
             });
 
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Chat failed");
 
-            setMessages((prev) => [...prev, {
-                role: "ai",
-                content: data.reply,
-                sources: data.sources
-            }]);
-        } catch (err: any) {
-            setMessages((prev) => [...prev, { role: "ai", content: "Sorry, I encountered an error: " + err.message }]);
+            setMessages((prev) => [
+                ...prev,
+                {
+                    role: "ai",
+                    content: data.reply,
+                    sources: data.sources,
+                },
+            ]);
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : "Unknown error";
+            setMessages((prev) => [
+                ...prev,
+                { role: "ai", content: "Sorry, I encountered an error: " + errorMessage },
+            ]);
         } finally {
             setIsTyping(false);
         }
@@ -74,7 +95,9 @@ export default function Chat() {
                         <MessageSquare className="w-10 h-10" />
                     </div>
                     <h2 className="text-3xl font-black">Memory Empty</h2>
-                    <p className="text-slate-500 max-w-xs mx-auto">Upload notes first to start chatting with your second brain.</p>
+                    <p className="text-slate-500 max-w-xs mx-auto">
+                        Upload notes first to start chatting with your second brain.
+                    </p>
                     <button
                         onClick={() => router.push("/")}
                         className="mt-4 px-8 py-3 bg-white text-black rounded-2xl font-black text-sm hover:scale-105 transition-all"
@@ -115,33 +138,54 @@ export default function Chat() {
                         </div>
                         <div className="space-y-2">
                             <h2 className="text-3xl font-black">AI Tutor Engaged</h2>
-                            <p className="text-slate-500 max-w-sm">Ask complex questions about your synthesized knowledge.</p>
+                            <p className="text-slate-500 max-w-sm">
+                                Ask complex questions about your synthesized knowledge.
+                            </p>
                         </div>
                         <div className="flex flex-wrap justify-center gap-2 max-w-md">
                             <QuickQuestion q="What are the key concepts?" setInput={setInput} />
-                            <QuickQuestion q="Summarize the mechanics notes" setInput={setInput} />
+                            <QuickQuestion
+                                q="Summarize the mechanics notes"
+                                setInput={setInput}
+                            />
                             <QuickQuestion q="How does X relate to Y?" setInput={setInput} />
                         </div>
                     </div>
                 )}
 
                 {messages.map((msg, i) => (
-                    <div key={i} className={`flex gap-6 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
-                        <div className={`shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ${msg.role === "ai" ? "bg-indigo-600 shadow-indigo-500/20" : "bg-white/5 border border-white/10"}`}>
-                            {msg.role === "ai" ? <Bot className="w-6 h-6" /> : <User className="w-6 h-6" />}
+                    <div
+                        key={i}
+                        className={`flex gap-6 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"
+                            } animate-in fade-in slide-in-from-bottom-4 duration-500`}
+                    >
+                        <div
+                            className={`shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ${msg.role === "ai"
+                                    ? "bg-indigo-600 shadow-indigo-500/20"
+                                    : "bg-white/5 border border-white/10"
+                                }`}
+                        >
+                            {msg.role === "ai" ? (
+                                <Bot className="w-6 h-6" />
+                            ) : (
+                                <User className="w-6 h-6" />
+                            )}
                         </div>
 
                         <div className={`max-w-[85%] md:max-w-[70%] space-y-4`}>
-                            <div className={`p-6 md:p-8 rounded-[32px] text-lg leading-relaxed ${msg.role === "user"
-                                ? "bg-indigo-600/10 border border-indigo-500/20 text-indigo-100 rounded-tr-none"
-                                : "bg-slate-900/60 border border-white/5 text-slate-200 rounded-tl-none"}`}>
+                            <div
+                                className={`p-6 md:p-8 rounded-[32px] text-lg leading-relaxed ${msg.role === "user"
+                                        ? "bg-indigo-600/10 border border-indigo-500/20 text-indigo-100 rounded-tr-none"
+                                        : "bg-slate-900/60 border border-white/5 text-slate-200 rounded-tl-none"
+                                    }`}
+                            >
                                 <div className="whitespace-pre-wrap">{msg.content}</div>
                             </div>
 
                             {msg.sources && msg.sources.length > 0 && (
                                 <div className="flex flex-wrap gap-2 px-2">
-                                    {msg.sources.map(sid => {
-                                        const note = notes.find(n => n.id === sid);
+                                    {msg.sources.map((sid) => {
+                                        const note = notes.find((n) => n.id === sid);
                                         return (
                                             <div
                                                 key={sid}
@@ -149,7 +193,7 @@ export default function Chat() {
                                                 className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-bold text-slate-400 hover:text-white transition-all cursor-pointer"
                                             >
                                                 <FileText className="w-3 h-3" />
-                                                {note?.name || 'Referenced Source'}
+                                                {note?.name || "Referenced Source"}
                                                 <ExternalLink className="w-2.5 h-2.5 opacity-50" />
                                             </div>
                                         );
@@ -193,7 +237,11 @@ export default function Chat() {
                         disabled={!input.trim() || isTyping}
                         className="absolute right-3 top-3 bottom-3 px-8 bg-indigo-600 hover:bg-indigo-500 text-white rounded-[24px] font-black tracking-tighter transition-all disabled:opacity-50 flex items-center gap-2 shadow-2xl shadow-indigo-500/20"
                     >
-                        {isTyping ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                        {isTyping ? (
+                            <RefreshCw className="w-5 h-5 animate-spin" />
+                        ) : (
+                            <Send className="w-5 h-5" />
+                        )}
                         Send
                     </button>
                 </form>
@@ -202,7 +250,7 @@ export default function Chat() {
     );
 }
 
-function QuickQuestion({ q, setInput }: { q: string, setInput: (v: string) => void }) {
+function QuickQuestion({ q, setInput }: { q: string; setInput: (v: string) => void }) {
     return (
         <button
             onClick={() => setInput(q)}
