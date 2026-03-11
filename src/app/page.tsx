@@ -180,7 +180,7 @@ export default function Landing() {
                   <Sparkles className="w-4 h-4 text-purple-500" /> AI Insights
                 </h3>
                 <div className="p-6 rounded-2xl bg-white/5 border border-white/5">
-                  <p className="text-slate-400 text-sm italic italic">"{summary.topInsight}"</p>
+                  <p className="text-slate-400 text-sm italic italic">&quot;{summary.topInsight}&quot;</p>
                 </div>
               </section>
             </div>

@@ -20,6 +20,7 @@ const serwist = new Serwist({
 });
 
 // 1. BACKGROUND SYNC (Standard API for PWA Builder)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 self.addEventListener("sync", (event: any) => {
     if (event.tag === "sync-data") {
         console.log("Service Worker: Syncing data in background...");
@@ -28,6 +29,7 @@ self.addEventListener("sync", (event: any) => {
 });
 
 // 2. PERIODIC BACKGROUND SYNC (Standard API for PWA Builder)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 self.addEventListener("periodicsync", (event: any) => {
     if (event.tag === "periodic-sync") {
         console.log("Service Worker: Periodic background sync triggered.");

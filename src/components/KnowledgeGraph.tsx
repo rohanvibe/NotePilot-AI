@@ -1,23 +1,22 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
-import { useStore, Note, Relationship } from '@/store/useStore';
+import { useStore } from '@/store/useStore';
 import { useRouter } from 'next/navigation';
 
 export default function KnowledgeGraph() {
     const { notes, relationships } = useStore();
     const router = useRouter();
     const fgRef = useRef<any>(null);
-    const [graphData, setGraphData] = useState({ nodes: [] as any[], links: [] as any[] });
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    useEffect(() => {
-        if (!mounted) return;
+    const graphData = useMemo(() => {
+        if (!mounted) return { nodes: [], links: [] };
 
         // Create nodes
         const nodes: any[] = notes.map(note => ({
@@ -62,7 +61,7 @@ export default function KnowledgeGraph() {
             });
         });
 
-        setGraphData({ nodes, links });
+        return { nodes, links };
     }, [notes, relationships, mounted]);
 
     if (!mounted) return <div className="w-full h-full flex items-center justify-center">Loading Graph...</div>;
@@ -75,7 +74,7 @@ export default function KnowledgeGraph() {
                 nodeLabel="name"
                 nodeAutoColorBy="topic"
                 linkDirectionalParticles={1}
-                linkDirectionalParticleSpeed={d => 0.01}
+                linkDirectionalParticleSpeed={() => 0.01}
                 onNodeClick={(node: any) => {
                     if (node.type === 'note') {
                         router.push(`/dashboard?noteId=${node.id}`);
@@ -103,7 +102,9 @@ export default function KnowledgeGraph() {
                 nodePointerAreaPaint={(node: any, color, ctx) => {
                     ctx.fillStyle = color;
                     const bckgDimensions = node.__bckgDimensions;
-                    bckgDimensions && ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, bckgDimensions[0], bckgDimensions[1]);
+                    if (bckgDimensions) {
+                        ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, bckgDimensions[0], bckgDimensions[1]);
+                    }
                 }}
             />
         </div>

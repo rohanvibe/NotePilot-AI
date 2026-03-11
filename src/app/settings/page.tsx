@@ -46,7 +46,7 @@ export default function Settings() {
                         </div>
                         <p className="text-sm text-zinc-400 px-2 flex items-center gap-2">
                             <AlertTriangle className="w-4 h-4 text-amber-500" />
-                            All data is stored securely in your browser's local storage via IndexedDB.
+                            All data is stored securely in your browser&apos;s local storage via IndexedDB.
                         </p>
                     </div>
 

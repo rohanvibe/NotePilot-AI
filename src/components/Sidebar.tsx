@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { FolderHeart, LayoutDashboard, Layers, MessageSquare, Settings, Share2, Brain, Search, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";

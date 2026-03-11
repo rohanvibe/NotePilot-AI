@@ -101,7 +101,7 @@ export default function SearchPage() {
                                     </div>
                                 </div>
                                 <p className="text-slate-400 text-sm leading-relaxed mb-6 italic">
-                                    "{result.reason}"
+                                    &quot;{result.reason}&quot;
                                 </p>
                                 <div className="flex items-center gap-2 text-slate-500 text-xs font-medium">
                                     <FileText className="w-4 h-4" />
@@ -114,7 +114,7 @@ export default function SearchPage() {
 
                 {!isSearching && results.length === 0 && query && (
                     <div className="py-20 text-center border-2 border-dashed border-white/5 rounded-[40px]">
-                        <p className="text-slate-500">No deep conceptual matches found for "{query}".</p>
+                        <p className="text-slate-500">No deep conceptual matches found for &quot;{query}&quot;.</p>
                     </div>
                 )}
             </div>
