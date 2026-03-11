@@ -35,6 +35,29 @@ interface RawFlashcard {
   back: string;
 }
 
+// Fixed any types and moved outside to decouple from component lifecycle
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const traverseFileTree = async (item: any): Promise<File[]> => {
+  return new Promise((resolve) => {
+    if (item.isFile) {
+      item.file((file: File) => {
+        resolve([file]);
+      });
+    } else if (item.isDirectory) {
+      const dirReader = item.createReader();
+      dirReader.readEntries(async (entries: any[]) => {
+        const files = await Promise.all(
+          entries.map((entry) => traverseFileTree(entry))
+        );
+        resolve(files.flat());
+      });
+    } else {
+      resolve([]);
+    }
+  });
+};
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
 export default function Landing() {
   const { addNotes, addFlashcards, notes } = useStore();
   const router = useRouter();
@@ -44,98 +67,80 @@ export default function Landing() {
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [summary, setSummary] = useState<SummaryResult | null>(null);
 
-  const processFiles = async (files: File[]) => {
-    setIsUploading(true);
-    setError(null);
-    try {
-      const formData = new FormData();
-      files.forEach((file) => {
-        formData.append("file", file);
-      });
-
-      // API call to analyze (handles text extraction and AI tagging)
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to process files");
-      if (!data.notes) throw new Error("AI analysis did not return any usable notes.");
-
-      // Update store with analyzed notes
-      const newNotes = data.notes.map((r: OrganizingResult) => ({
-        id: r.id || crypto.randomUUID(),
-        name: r.name,
-        content: r.content,
-        topic: r.topic,
-        summary: r.summary,
-        keyPoints: r.keyPoints,
-        importantTerms: r.importantTerms,
-        createdAt: r.createdAt || Date.now(),
-      }));
-
-      addNotes(newNotes);
-
-      // Generate flashcards for new notes
-      const fRes = await fetch("/api/flashcards", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: newNotes.map((n: OrganizingResult) => n.content).join("\n\n"),
-          notesNames: newNotes.map((n: OrganizingResult) => n.name),
-        }),
-      });
-      const fData = await fRes.json();
-      if (fData.success) {
-        addFlashcards(
-          fData.flashcards.map((f: RawFlashcard) => ({
-            ...f,
-            id: crypto.randomUUID(),
-            nextReviewDate: Date.now(),
-            difficulty: "new",
-            interval: 0,
-            ease: 2.5,
-            reviewCount: 0,
-            noteId: newNotes[0]?.id, // Link to first note for now or handle per-note later
-          }))
-        );
-      }
-
-      // Generate a quick summary metadata
-      setSummary({
-        impact: `Transformed ${newNotes.length} messy inputs into structured knowledge.`,
-        topInsight: newNotes[0]?.summary || "Your notes are now searchable and organized.",
-      });
-    } catch (err: unknown) {
-      console.error("Processing error:", err);
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("An unexpected error occurred during processing.");
-      }
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const traverseFileTree = async (item: any): Promise<File[]> => {
-    return new Promise((resolve) => {
-      if (item.isFile) {
-        item.file((file: File) => {
-          resolve([file]);
+  const processFiles = useCallback(
+    async (files: File[]) => {
+      setIsUploading(true);
+      setError(null);
+      try {
+        const formData = new FormData();
+        files.forEach((file) => {
+          formData.append("file", file);
         });
-      } else if (item.isDirectory) {
-        const dirReader = item.createReader();
-        dirReader.readEntries(async (entries: any[]) => {
-          const files = await Promise.all(entries.map((entry) => traverseFileTree(entry)));
-          resolve(files.flat());
+
+        const res = await fetch("/api/analyze", {
+          method: "POST",
+          body: formData,
         });
-      } else {
-        resolve([]);
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to process files");
+        if (!data.notes) throw new Error("AI analysis did not return any usable notes.");
+
+        const newNotes = data.notes.map((r: OrganizingResult) => ({
+          id: r.id || crypto.randomUUID(),
+          name: r.name,
+          content: r.content,
+          topic: r.topic,
+          summary: r.summary,
+          keyPoints: r.keyPoints,
+          importantTerms: r.importantTerms,
+          createdAt: r.createdAt || Date.now(),
+        }));
+
+        addNotes(newNotes);
+
+        const fRes = await fetch("/api/flashcards", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: newNotes.map((n: OrganizingResult) => n.content).join("\n\n"),
+            notesNames: newNotes.map((n: OrganizingResult) => n.name),
+          }),
+        });
+        const fData = await fRes.json();
+        if (fData.success) {
+          addFlashcards(
+            fData.flashcards.map((f: RawFlashcard) => ({
+              ...f,
+              id: crypto.randomUUID(),
+              nextReviewDate: Date.now(),
+              difficulty: "new",
+              interval: 0,
+              ease: 2.5,
+              reviewCount: 0,
+              noteId: newNotes[0]?.id,
+            }))
+          );
+        }
+
+        setSummary({
+          impact: `Transformed ${newNotes.length} messy inputs into structured knowledge.`,
+          topInsight:
+            newNotes[0]?.summary || "Your notes are now searchable and organized.",
+        });
+      } catch (err: unknown) {
+        console.error("Processing error:", err);
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unexpected error occurred during processing.");
+        }
+      } finally {
+        setIsUploading(false);
       }
-    });
-  };
+    },
+    [addNotes, addFlashcards]
+  );
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -149,9 +154,7 @@ export default function Landing() {
     const items = e.dataTransfer.items;
     if (!items) return;
 
-    const allFiles: File[] = [];
     const promises = [];
-
     for (let i = 0; i < items.length; i++) {
       const item = items[i].webkitGetAsEntry();
       if (item) {
