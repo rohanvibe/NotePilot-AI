@@ -97,19 +97,26 @@ Ensure it is valid JSON. Do not include markdown formatting or backticks around 
                 console.error("SambaNova Generation Error:", err);
             }
 
+            interface AnalysisResult {
+                topic?: string;
+                summary?: string;
+                keyPoints?: string[];
+                importantTerms?: string[];
+            }
+
             try {
-                const parsedAnalysis = aiResponse ? extractJSON<Record<string, unknown>>(aiResponse) : {};
+                const parsedAnalysis = (aiResponse ? extractJSON<AnalysisResult>(aiResponse) : {}) as AnalysisResult;
                 results.push({
                     id: randomUUID(),
                     name: file.name,
                     content: text,
-                    topic: (parsedAnalysis as any).topic || "Uncategorized",
-                    summary: (parsedAnalysis as any).summary || "Summary generation failed.",
-                    keyPoints: (parsedAnalysis as any).keyPoints || [],
-                    importantTerms: (parsedAnalysis as any).importantTerms || [],
+                    topic: parsedAnalysis.topic || "Uncategorized",
+                    summary: parsedAnalysis.summary || "Summary generation failed.",
+                    keyPoints: parsedAnalysis.keyPoints || [],
+                    importantTerms: parsedAnalysis.importantTerms || [],
                     createdAt: Date.now(),
                 });
-            } catch (err) {
+            } catch {
                 console.error(
                     "Failed to process AI response for file:",
                     file.name,
