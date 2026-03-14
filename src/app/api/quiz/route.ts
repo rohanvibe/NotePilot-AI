@@ -6,7 +6,7 @@ export const maxDuration = 60;
 
 export async function POST(request: Request) {
     try {
-        const { text, type = "mixed", count = 5 } = await request.json();
+        const { text, count = 5 } = await request.json();
 
         if (!text) {
             return NextResponse.json(

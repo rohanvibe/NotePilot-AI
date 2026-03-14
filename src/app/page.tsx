@@ -181,7 +181,7 @@ export default function Landing() {
     addNotes(demoNotes.map(n => ({
       ...n,
       id: crypto.randomUUID(), 
-    })) as any); // Type fix for demo
+    }))); 
     
     setSummary({
       impact: "Simulated 2 messy documents into structured research topics.",
@@ -379,7 +379,11 @@ export default function Landing() {
             <button
               onClick={() => {
                 const text = `I just organized my messy notes with NotePilot AI! Check it out: ${window.location.host}`;
-                navigator.share ? navigator.share({ title: 'NotePilot AI', text, url: window.location.href }) : alert('Ready to share!');
+                if (navigator.share) {
+                  navigator.share({ title: 'NotePilot AI', text, url: window.location.href });
+                } else {
+                  alert('Ready to share!');
+                }
               }}
               className="px-10 py-6 bg-indigo-600 text-white rounded-[28px] text-xl font-black transition-all hover:bg-indigo-500 flex items-center justify-center gap-4 shadow-3xl shadow-indigo-500/20"
             >

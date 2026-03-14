@@ -213,7 +213,11 @@ export default function Dashboard() {
                                 <button
                                     onClick={() => {
                                         const text = `Check out my structured revision for ${topic} on NotePilot AI!`;
-                                        navigator.share ? navigator.share({ title: 'Study Hub', text, url: window.location.href }) : alert('Drafting share...');
+                                        if (navigator.share) {
+                                            navigator.share({ title: 'Study Hub', text, url: window.location.href });
+                                        } else {
+                                            alert('Drafting share...');
+                                        }
                                     }}
                                     className="p-3 rounded-2xl bg-white/5 hover:bg-white/10 text-slate-400 border border-white/5 transition-all"
                                     title="Invite classmates"
@@ -264,7 +268,11 @@ export default function Dashboard() {
                                         <button
                                             onClick={() => {
                                                 const text = `Shared note: ${note.name}\n\nSummary: ${note.summary}`;
-                                                navigator.share ? navigator.share({ title: note.name, text, url: window.location.href }) : alert('URL Copied!');
+                                                if (navigator.share) {
+                                                    navigator.share({ title: note.name, text, url: window.location.href });
+                                                } else {
+                                                    alert('URL Copied!');
+                                                }
                                             }}
                                             className="p-3 rounded-2xl bg-white/5 hover:bg-white/10 text-slate-400 transition-all border border-transparent"
                                         >
