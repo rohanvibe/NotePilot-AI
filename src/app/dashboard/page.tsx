@@ -17,6 +17,7 @@ import {
     RefreshCw,
     XCircle,
     Calendar,
+    Share2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -154,10 +155,9 @@ export default function Dashboard() {
                             <CheckCircle2 className="w-3 h-3" />
                             Transformation Complete
                         </div>
-                        <h2 className="text-3xl font-bold">Chaos to Knowledge</h2>
+                        <h2 className="text-3xl font-bold">Organized Notes</h2>
                         <p className="text-slate-400 leading-relaxed">
-                            Our AI has restructured your messy files into a structured learning
-                            environment.
+                            We&apos;ve automatically sorted your files into topics and summaries.
                         </p>
                     </div>
 
@@ -209,18 +209,30 @@ export default function Dashboard() {
                                 </div>
                             </div>
 
-                            <button
-                                onClick={() => prepareForExam(topic, topicNotes)}
-                                disabled={revisingTopic === topic}
-                                className="hidden md:flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl font-bold text-sm transition-all"
-                            >
-                                {revisingTopic === topic ? (
-                                    <RefreshCw className="w-4 h-4 animate-spin" />
-                                ) : (
-                                    <GraduationCap className="w-4 h-4" />
-                                )}
-                                Prepare for Exam
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => {
+                                        const text = `Check out my structured revision for ${topic} on NotePilot AI!`;
+                                        navigator.share ? navigator.share({ title: 'Study Hub', text, url: window.location.href }) : alert('Drafting share...');
+                                    }}
+                                    className="p-3 rounded-2xl bg-white/5 hover:bg-white/10 text-slate-400 border border-white/5 transition-all"
+                                    title="Invite classmates"
+                                >
+                                    <Share2 className="w-5 h-5" />
+                                </button>
+                                <button
+                                    onClick={() => prepareForExam(topic, topicNotes)}
+                                    disabled={revisingTopic === topic}
+                                    className="hidden md:flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-2xl font-bold text-sm transition-all text-white"
+                                >
+                                    {revisingTopic === topic ? (
+                                        <RefreshCw className="w-4 h-4 animate-spin" />
+                                    ) : (
+                                        <GraduationCap className="w-4 h-4" />
+                                    )}
+                                    Get Exam Ready
+                                </button>
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -248,6 +260,15 @@ export default function Dashboard() {
                                             ) : (
                                                 <Zap className="w-5 h-5" />
                                             )}
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                const text = `Shared note: ${note.name}\n\nSummary: ${note.summary}`;
+                                                navigator.share ? navigator.share({ title: note.name, text, url: window.location.href }) : alert('URL Copied!');
+                                            }}
+                                            className="p-3 rounded-2xl bg-white/5 hover:bg-white/10 text-slate-400 transition-all border border-transparent"
+                                        >
+                                            <Share2 className="w-5 h-5" />
                                         </button>
                                     </div>
 

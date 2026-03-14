@@ -24,16 +24,16 @@ export default function Sidebar({ className }: { className?: string }) {
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 px-3">Main Menu</p>
                 <NavItem href="/" icon={<FolderHeart className="w-4 h-4" />} label="Upload" active={pathname === "/"} />
                 <NavItem href="/dashboard" icon={<LayoutDashboard className="w-4 h-4" />} label="Dashboard" active={pathname === "/dashboard"} />
-                <NavItem href="/dashboard/graph" icon={<Share2 className="w-4 h-4" />} label="Knowledge Graph" active={pathname === "/dashboard/graph"} />
+                <NavItem href="/dashboard/graph" icon={<Share2 className="w-4 h-4" />} label="Idea Map" active={pathname === "/dashboard/graph"} />
 
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 mt-6 px-3">Learn</p>
                 <NavItem href="/flashcards" icon={<Layers className="w-4 h-4" />} label="Flashcards" active={pathname === "/flashcards"} />
-                <NavItem href="/dashboard/study" icon={<Brain className="w-4 h-4" />} label="Study Mode" active={pathname === "/dashboard/study"} />
-                <NavItem href="/dashboard/course" icon={<GraduationCap className="w-4 h-4" />} label="Course Builder" active={pathname === "/dashboard/course"} />
+                <NavItem href="/dashboard/study" icon={<Brain className="w-4 h-4" />} label="Quiz Mode" active={pathname === "/dashboard/study"} />
+                <NavItem href="/dashboard/course" icon={<GraduationCap className="w-4 h-4" />} label="Study Path" active={pathname === "/dashboard/course"} />
 
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 mt-6 px-3">Intelligence</p>
-                <NavItem href="/chat" icon={<MessageSquare className="w-4 h-4" />} label="Chat AI" active={pathname === "/chat"} />
-                <NavItem href="/dashboard/search" icon={<Search className="w-4 h-4" />} label="Semantic Search" active={pathname === "/dashboard/search"} />
+                <NavItem href="/chat" icon={<MessageSquare className="w-4 h-4" />} label="Study Chat" active={pathname === "/chat"} />
+                <NavItem href="/dashboard/search" icon={<Search className="w-4 h-4" />} label="Smart Search" active={pathname === "/dashboard/search"} />
             </nav>
 
             <div className="mt-auto border-t border-white/5 pt-6">

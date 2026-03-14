@@ -11,6 +11,7 @@ import {
   ArrowRight,
   ShieldCheck,
   X,
+  Share2,
 } from "lucide-react";
 import { useStore } from "@/store/useStore";
 
@@ -154,6 +155,40 @@ export default function Landing() {
     [addNotes, addFlashcards]
   );
 
+  const loadDemo = () => {
+    const demoNotes: OrganizingResult[] = [
+      {
+        id: crypto.randomUUID(),
+        name: "Quantum Physics.txt",
+        content: "Quantum entanglement is a phenomenon where particles...",
+        topic: "Physics",
+        summary: "Exploration of quantum phenomena and entanglement.",
+        keyPoints: ["Entanglement", "Superposition", "Wave function"],
+        importantTerms: ["Qubit", "Entanglement"],
+        createdAt: Date.now(),
+      },
+      {
+        id: crypto.randomUUID(),
+        name: "Organic Chemistry.md",
+        content: "Alkanes are saturated hydrocarbons...",
+        topic: "Chemistry",
+        summary: "Fundamentals of organic molecular structures.",
+        keyPoints: ["Hydrocarbons", "Single bonds", "Saturated"],
+        importantTerms: ["Alkanes", "Methane"],
+        createdAt: Date.now(),
+      }
+    ];
+    addNotes(demoNotes.map(n => ({
+      ...n,
+      id: crypto.randomUUID(), 
+    })) as any); // Type fix for demo
+    
+    setSummary({
+      impact: "Simulated 2 messy documents into structured research topics.",
+      topInsight: "Your second brain is ready to explore."
+    });
+  };
+
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -206,15 +241,32 @@ export default function Landing() {
               AI Powered v2.0
             </div>
             <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white">
-              Messy Notes to{" "}
+              Organize Messy{" "}
               <span className="bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Genius.
+                Notes.
               </span>
             </h1>
             <p className="text-slate-500 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
-              Upload your unstructured text files or folders. Our AI will categorize,
-              summarize, and build a knowledge graph.
+              Don&apos;t waste time sorting folders. Drop your files here and let AI 
+              organize, summarize, and create quizzes for you in seconds.
             </p>
+          </div>
+
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+            <button 
+              onClick={() => document.querySelector('input')?.click()}
+              className="px-8 py-5 bg-white text-black rounded-3xl font-black text-lg hover:scale-105 transition-all shadow-2xl flex items-center gap-3"
+            >
+              Start for Free
+              <UploadCloud className="w-5 h-5" />
+            </button>
+            <button 
+              onClick={loadDemo}
+              className="px-8 py-5 bg-white/5 border border-white/10 text-slate-400 rounded-3xl font-black text-lg hover:bg-white/10 transition-all flex items-center gap-3"
+            >
+              Try with Demo
+              <Sparkles className="w-5 h-5" />
+            </button>
           </div>
 
           <div
@@ -316,13 +368,25 @@ export default function Landing() {
             </div>
           </div>
 
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="w-full py-6 bg-white text-black rounded-[28px] text-2xl font-black transition-all hover:scale-105 flex items-center justify-center gap-4 shadow-3xl shadow-white/5"
-          >
-            Enter Second Brain
-            <ArrowRight className="w-8 h-8" />
-          </button>
+          <div className="flex flex-col md:flex-row gap-4">
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="flex-1 py-6 bg-white text-black rounded-[28px] text-2xl font-black transition-all hover:scale-105 flex items-center justify-center gap-4 shadow-3xl shadow-white/5"
+            >
+              Enter Second Brain
+              <ArrowRight className="w-8 h-8" />
+            </button>
+            <button
+              onClick={() => {
+                const text = `I just organized my messy notes with NotePilot AI! Check it out: ${window.location.host}`;
+                navigator.share ? navigator.share({ title: 'NotePilot AI', text, url: window.location.href }) : alert('Ready to share!');
+              }}
+              className="px-10 py-6 bg-indigo-600 text-white rounded-[28px] text-xl font-black transition-all hover:bg-indigo-500 flex items-center justify-center gap-4 shadow-3xl shadow-indigo-500/20"
+            >
+              Share with Friends
+              <Share2 className="w-6 h-6" />
+            </button>
+          </div>
         </div>
       )}
 

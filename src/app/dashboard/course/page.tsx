@@ -43,9 +43,9 @@ export default function CoursePage() {
                 <div className="space-y-4 relative z-10">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
                         <Sparkles className="w-3 h-3" />
-                        AI Curriculum Builder
+                        AI Study Path
                     </div>
-                    <h1 className="text-5xl font-black">Course Builder</h1>
+                    <h1 className="text-5xl font-black">Study Path</h1>
                     <p className="text-slate-400 text-lg max-w-xl">
                         We&apos;ve analyzed your notes and can build a logical learning path for you to
                         master any subject.
@@ -61,7 +61,7 @@ export default function CoursePage() {
                     ) : (
                         <GraduationCap className="w-6 h-6" />
                     )}
-                    Generate Academy
+                    Create Study Path
                 </button>
             </header>
 
@@ -99,7 +99,7 @@ export default function CoursePage() {
                                         {course.subject}
                                     </h2>
                                     <p className="text-slate-400 font-medium">
-                                        Curated Academy • {course.steps.length} Learning Modules
+                                        Study Path • {course.steps.length} Steps
                                     </p>
                                 </div>
                                 <div className="p-6 rounded-[32px] bg-white/5 border border-white/5">

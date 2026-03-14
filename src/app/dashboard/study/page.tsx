@@ -85,7 +85,7 @@ export default function StudyPage() {
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="space-y-2">
                     <h1 className="text-4xl font-black bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-                        Study Arena
+                        Quiz Mode
                     </h1>
                     <p className="text-slate-400 font-medium">
                         Test your knowledge with AI-driven challenges.
@@ -149,7 +149,7 @@ export default function StudyPage() {
                 <div className="py-20 text-center space-y-6">
                     <div className="w-20 h-20 border-8 border-emerald-500/10 border-t-emerald-500 rounded-full animate-spin mx-auto" />
                     <p className="text-xl font-bold animate-pulse text-emerald-400">
-                        Synthesizing practice questions...
+                        Creating Quiz...
                     </p>
                 </div>
             )}
@@ -232,9 +232,9 @@ export default function StudyPage() {
                     </div>
 
                     <div className="space-y-2">
-                        <h2 className="text-5xl font-black">Evaluation Ready</h2>
+                        <h2 className="text-5xl font-black">All Done!</h2>
                         <p className="text-slate-400 text-xl font-medium">
-                            You dominated {score} / {quiz.length} concepts
+                            You got {score} / {quiz.length} points
                         </p>
                     </div>
 
@@ -253,7 +253,7 @@ export default function StudyPage() {
                             onClick={() => router.push("/dashboard")}
                             className="w-full py-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-3xl font-black text-xl transition-all"
                         >
-                            Back to Brain
+                            Back to Dashboard
                         </button>
                     </div>
                 </div>
