@@ -40,10 +40,10 @@ export default function StudyPage() {
                 .join("\n\n")
                 .slice(0, 15000);
 
-            const res = await fetch("/api/study", {
+            const res = await fetch("/api/quiz", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ context }),
+                body: JSON.stringify({ text: context }),
             });
 
             const data = await res.json();
