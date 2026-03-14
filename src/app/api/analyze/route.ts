@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { extractJSON } from "@/lib/utils";
+import { randomUUID } from "crypto";
 
 // Polyfill for Vercel Serverless environment where pdf-parse dependencies are missing
 if (typeof globalThis.DOMMatrix === "undefined") {
@@ -50,22 +51,27 @@ export async function POST(request: Request) {
         const results = [];
 
         for (const file of files) {
-            const arrayBuffer = await file.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
             let text = "";
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const buffer = Buffer.from(arrayBuffer);
 
-            const ext = file.name.split(".").pop()?.toLowerCase();
+                const ext = file.name.split(".").pop()?.toLowerCase();
 
-            if (ext === "txt" || ext === "md" || ext === "csv") {
-                text = buffer.toString("utf-8");
-            } else if (ext === "pdf") {
-                const data = await pdfParse(buffer);
-                text = data.text;
-            } else if (ext === "docx") {
-                const result = await mammoth.extractRawText({ buffer });
-                text = result.value;
-            } else {
-                text = "Unsupported file format: " + ext;
+                if (ext === "txt" || ext === "md" || ext === "csv") {
+                    text = buffer.toString("utf-8");
+                } else if (ext === "pdf") {
+                    const data = await pdfParse(buffer);
+                    text = data.text;
+                } else if (ext === "docx") {
+                    const result = await mammoth.extractRawText({ buffer });
+                    text = result.value;
+                } else {
+                    text = "Unsupported file format: " + ext;
+                }
+            } catch (err) {
+                console.error(`Error parsing file ${file.name}:`, err);
+                text = `[Error parsing ${file.name}]`;
             }
 
             // Ensure text is not empty before asking SambaNova to analyze
@@ -84,26 +90,34 @@ Given the following messy notes text, analyze it and return a strict JSON object
 }
 Ensure it is valid JSON. Do not include markdown formatting or backticks around the json, just output {"topic":...} directly.`;
 
-            const aiResponse = await generateContent(systemPrompt, text);
+            let aiResponse = "";
+            try {
+                aiResponse = await generateContent(systemPrompt, text);
+            } catch (err) {
+                console.error("SambaNova Generation Error:", err);
+            }
 
             try {
-                const parsedAnalysis = extractJSON<Record<string, unknown>>(aiResponse);
+                const parsedAnalysis = aiResponse ? extractJSON<Record<string, unknown>>(aiResponse) : {};
                 results.push({
-                    id: crypto.randomUUID(),
+                    id: randomUUID(),
                     name: file.name,
                     content: text,
-                    ...parsedAnalysis,
+                    topic: (parsedAnalysis as any).topic || "Uncategorized",
+                    summary: (parsedAnalysis as any).summary || "Summary generation failed.",
+                    keyPoints: (parsedAnalysis as any).keyPoints || [],
+                    importantTerms: (parsedAnalysis as any).importantTerms || [],
                     createdAt: Date.now(),
                 });
-            } catch {
+            } catch (err) {
                 console.error(
-                    "Failed to parse AI response as JSON for file:",
+                    "Failed to process AI response for file:",
                     file.name,
                     aiResponse
                 );
                 // Fallback
                 results.push({
-                    id: crypto.randomUUID(),
+                    id: randomUUID(),
                     name: file.name,
                     content: text,
                     topic: "Uncategorized",

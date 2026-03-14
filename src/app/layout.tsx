@@ -87,9 +87,9 @@ export default function RootLayout({
 
                   // Periodic Sync
                   if ('periodicSync' in registration) {
-                    const status = await navigator.permissions.query({ name: 'periodic-background-sync' as any });
+                    const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
                     if (status.state === 'granted') {
-                      await (registration as any).periodicSync.register('periodic-sync', {
+                      await registration.periodicSync.register('periodic-sync', {
                         minInterval: 24 * 60 * 60 * 1000,
                       });
                     }
