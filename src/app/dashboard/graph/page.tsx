@@ -19,7 +19,7 @@ export default function GraphPage() {
         <div className="max-w-6xl mx-auto space-y-8 py-12 px-6">
             <header className="flex items-center justify-between gap-6 pb-6 border-b border-white/5">
                 <div className="space-y-2">
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+                    <h1 className="text-4xl font-bold bg-linear-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
                         Knowledge Graph
                     </h1>
                     <p className="text-slate-400">

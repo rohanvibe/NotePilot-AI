@@ -68,7 +68,7 @@ export default function FlashcardsPage() {
         <div className="max-w-5xl mx-auto py-12 px-6 space-y-12">
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8">
                 <div className="space-y-1">
-                    <h1 className="text-4xl font-black bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+                    <h1 className="text-4xl font-black bg-linear-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
                         Memory Engine
                     </h1>
                     <p className="text-slate-500 font-medium tracking-tight">

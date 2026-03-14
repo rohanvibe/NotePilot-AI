@@ -11,7 +11,7 @@ export default function Sidebar({ className }: { className?: string }) {
     return (
         <aside className={cn("flex flex-col py-8 px-5 shrink-0 bg-black/40 border-r border-white/5 backdrop-blur-xl w-64", className)}>
             <div className="flex items-center gap-4 px-2 mb-10">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 flex items-center justify-center shadow-2xl shadow-indigo-500/40 text-white font-bold text-xl">
+                <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-blue-500 via-indigo-500 to-purple-600 flex items-center justify-center shadow-2xl shadow-indigo-500/40 text-white font-bold text-xl">
                     N
                 </div>
                 <div>
