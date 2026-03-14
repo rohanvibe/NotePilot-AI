@@ -170,11 +170,7 @@
     },
     "scope_extensions": [
         {
-            "origin": "ai-notes-organizer.vercel.app",
-            "type": "origin"
-        },
-        {
-            "origin": "*.vercel.app",
+            "origin": "https://ai-notes-organizer.vercel.app",
             "type": "origin"
         }
     ],

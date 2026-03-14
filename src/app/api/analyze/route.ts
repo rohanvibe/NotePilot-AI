@@ -1,8 +1,5 @@
-import { NextResponse } from "next/server";
-import { extractJSON } from "@/lib/utils";
-import { randomUUID } from "crypto";
-
 // Polyfill for Vercel Serverless environment where pdf-parse dependencies are missing
+// We must do this before any other imports that might depend on them
 if (typeof globalThis.DOMMatrix === "undefined") {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (globalThis as any).DOMMatrix = class DOMMatrix { };
@@ -16,10 +13,12 @@ if (typeof globalThis.ImageData === "undefined") {
     (globalThis as any).ImageData = class ImageData { };
 }
 
-// @ts-expect-error pdf-parse lacks types
-import pdfParse from "pdf-parse";
-import mammoth from "mammoth";
+import { NextResponse } from "next/server";
+import { extractJSON } from "@/lib/utils";
+import { randomUUID } from "crypto";
 import { generateContent } from "@/lib/sambanova";
+// We will use dynamic imports for pdf-parse and mammoth inside the POST handler
+// to ensure polyfills are established before they are evaluated.
 
 export const maxDuration = 60; // Max execution time for Next.js
 export const dynamic = "force-dynamic";
@@ -47,6 +46,12 @@ export async function POST(request: Request) {
         if (!files || files.length === 0) {
             return NextResponse.json({ error: "No files uploaded" }, { status: 400 });
         }
+
+        // Dynamic imports to ensure polyfills are set
+        // @ts-expect-error pdf-parse lacks types
+        const pdfParse = (await import("pdf-parse")).default;
+        const mammothImport = await import("mammoth");
+        const mammoth = (mammothImport as unknown as { default: typeof mammothImport }).default || mammothImport;
 
         const results = [];
 
