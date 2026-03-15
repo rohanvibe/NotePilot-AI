@@ -68,10 +68,10 @@ export default function FlashcardsPage() {
         <div className="max-w-5xl mx-auto py-12 px-6 space-y-12">
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8">
                 <div className="space-y-1">
-                    <h1 className="text-4xl font-black bg-linear-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+                    <h1 className="text-4xl font-black bg-linear-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent">
                         Memory Engine
                     </h1>
-                    <p className="text-zinc-400 font-medium tracking-tight opacity-90">
+                    <p className="text-slate-300 font-medium tracking-tight">
                         Active recall via Spaced Repetition (SM-2)
                     </p>
                 </div>
@@ -92,10 +92,10 @@ export default function FlashcardsPage() {
                         <section className="bg-slate-900/40 border border-white/5 rounded-[40px] p-8 space-y-8">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-2xl font-bold flex items-center gap-2">
-                                    <Layers className="w-6 h-6 text-amber-500" />
+                                    <Layers className="w-6 h-6 text-amber-500" aria-hidden="true" />
                                     Knowledge Inventory
                                 </h2>
-                                <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-slate-300 uppercase tracking-widest shadow-inner">
                                     {flashcards.length} Total Cards
                                 </span>
                             </div>
@@ -130,16 +130,16 @@ export default function FlashcardsPage() {
                                             <p className="font-bold text-slate-200 line-clamp-1">
                                                 {card.front}
                                             </p>
-                                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest opacity-80 flex items-center gap-1">
-                                                <Bookmark className="w-3 h-3" />{" "}
+                                            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest opacity-90 flex items-center gap-1.5">
+                                                <Bookmark className="w-3 h-3 text-amber-500" aria-hidden="true" />{" "}
                                                 {note?.name || "General Knowledge"}
                                             </p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-[10px] font-bold text-zinc-400 uppercase opacity-80">
+                                            <p className="text-xs font-bold text-slate-400 uppercase opacity-90">
                                                 Review In
                                             </p>
-                                            <p className="text-xs font-black text-amber-500">
+                                            <p className="text-sm font-black text-amber-400">
                                                 {card.nextReviewDate <= now
                                                     ? "Now"
                                                     : Math.ceil(
@@ -187,10 +187,10 @@ export default function FlashcardsPage() {
                             <XCircle className="w-6 h-6" />
                         </button>
                         <div className="text-center">
-                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest opacity-80">
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest opacity-90">
                                 Progress
                             </p>
-                            <p className="text-sm font-black">
+                            <p className="text-base font-black text-white">
                                 {currentIdx + 1} / {dueCards.length}
                             </p>
                         </div>
@@ -208,10 +208,10 @@ export default function FlashcardsPage() {
                                 <div className="p-4 rounded-3xl bg-orange-500/10 text-orange-500">
                                     <Brain className="w-10 h-10" />
                                 </div>
-                                <h2 className="text-3xl font-black leading-tight text-white">
+                                <h2 className="text-3xl md:text-4xl font-black leading-tight text-white">
                                     {currentCard?.front}
                                 </h2>
-                                <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] animate-pulse">
+                                <p className="text-slate-400 font-bold uppercase tracking-widest text-xs animate-pulse">
                                     Click to Reveal Answer
                                 </p>
                             </div>
@@ -234,21 +234,22 @@ export default function FlashcardsPage() {
                     {showBack ? (
                         <div className="grid grid-cols-4 gap-3 animate-in slide-in-from-bottom-4 duration-300">
                             {[
-                                { q: 1, label: "Forgot", color: "bg-red-500 shadow-red-500/20" },
-                                { q: 3, label: "Hard", color: "bg-orange-500 shadow-orange-500/20" },
-                                { q: 4, label: "Good", color: "bg-indigo-600 shadow-indigo-500/20" },
+                                { q: 1, label: "Forgot", color: "bg-red-600 shadow-red-600/20 active:bg-red-700" },
+                                { q: 3, label: "Hard", color: "bg-orange-600 shadow-orange-600/20 active:bg-orange-700" },
+                                { q: 4, label: "Good", color: "bg-indigo-600 shadow-indigo-600/20 active:bg-indigo-700" },
                                 {
                                     q: 5,
                                     label: "Easy",
-                                    color: "bg-emerald-600 shadow-emerald-500/20",
+                                    color: "bg-emerald-600 shadow-emerald-600/20 active:bg-emerald-700",
                                 },
                             ].map((btn) => (
                                 <button
                                     key={btn.q}
                                     onClick={() => handleScore(btn.q)}
-                                    className={`py-6 rounded-3xl text-white font-black text-lg transition-all hover:scale-105 active:scale-95 shadow-xl ${btn.color}`}
+                                    className={`py-6 rounded-3xl text-white font-black text-lg transition-all hover:scale-105 active:scale-95 shadow-xl outline-none focus-visible:ring-4 focus-visible:ring-offset-4 focus-visible:ring-offset-black focus-visible:ring-white/50 ${btn.color}`}
+                                    aria-label={`Mark as ${btn.label}`}
                                 >
-                                    <span className="block text-[10px] opacity-60 uppercase mb-1">
+                                    <span className="block text-[11px] font-black opacity-80 uppercase mb-1 tracking-widest">
                                         {btn.label}
                                     </span>
                                     {btn.q}

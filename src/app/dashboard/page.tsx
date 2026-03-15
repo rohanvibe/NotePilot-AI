@@ -139,7 +139,7 @@ export default function Dashboard() {
                         placeholder="Search concepts, topics, or notes..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all backdrop-blur-md"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all backdrop-blur-md outline-none"
                         aria-label="Search concepts, topics, or notes"
                     />
                 </div>
@@ -156,17 +156,17 @@ export default function Dashboard() {
                             <Sparkles className="w-4 h-4" />
                             Second Brain Active
                         </div>
-                        <h2 className="text-5xl font-black tracking-tight text-white leading-tight">
+                        <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
                             Your knowledge, <br />
-                            <span className="text-indigo-400">synthesized.</span>
+                            <span className="text-indigo-300">synthesized.</span>
                         </h2>
-                        <p className="text-slate-400 text-lg font-medium leading-relaxed">
+                        <p className="text-slate-300 text-lg font-medium leading-relaxed">
                             NotePilot has decoded your messy inputs into a structured hierarchy. 
                             Ready for deep learning and discovery.
                         </p>
                     </div>
 
-                    <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-6 w-full">
+                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full">
                         <StatCard
                             icon={<Files className="w-5 h-5" />}
                             label="Archive"
@@ -212,7 +212,7 @@ export default function Dashboard() {
                                     <h2 className="text-2xl font-bold text-white uppercase tracking-tight">
                                         {topic}
                                     </h2>
-                                    <p className="text-slate-500 text-sm font-medium">
+                                    <p className="text-slate-400 text-sm font-medium">
                                         {topicNotes.length} source files
                                     </p>
                                 </div>
@@ -256,10 +256,10 @@ export default function Dashboard() {
                                 >
                                     <div className="flex items-start justify-between">
                                         <div className="space-y-1">
-                                            <h3 className="text-2xl font-bold text-white group-hover:text-indigo-400 transition-colors leading-tight">
+                                            <h3 className="text-2xl font-bold text-white group-hover:text-indigo-300 transition-colors leading-tight">
                                                 {note.name}
                                             </h3>
-                                            <p className="text-xs text-slate-500 font-mono">
+                                            <p className="text-xs text-slate-400 font-mono">
                                                 {new Date(note.createdAt).toLocaleDateString()}
                                             </p>
                                         </div>
@@ -291,11 +291,11 @@ export default function Dashboard() {
 
                                     {note.summary && (
                                         <div className="space-y-3">
-                                            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                                <AlignLeft className="w-3 h-3 text-indigo-500" />{" "}
+                                            <div className="flex items-center gap-2 text-[11px] font-bold text-indigo-300 uppercase tracking-widest">
+                                                <AlignLeft className="w-3 h-3" aria-hidden="true" />{" "}
                                                 Summary
                                             </div>
-                                            <p className="text-slate-300 text-sm leading-relaxed bg-black/40 p-5 rounded-2xl border border-white/5 italic">
+                                            <p className="text-slate-200 text-sm leading-relaxed bg-black/40 p-5 rounded-2xl border border-white/5 italic">
                                                 &quot;{note.summary}&quot;
                                             </p>
                                         </div>
@@ -323,14 +323,14 @@ export default function Dashboard() {
 
                                         {note.importantTerms && note.importantTerms.length > 0 && (
                                             <div className="space-y-4">
-                                                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                                    <Tags className="w-3 h-3 text-emerald-500" /> Tags
+                                                <div className="flex items-center gap-2 text-[11px] font-bold text-emerald-400 uppercase tracking-widest">
+                                                    <Tags className="w-3 h-3" aria-hidden="true" /> Tags
                                                 </div>
                                                 <div className="flex flex-wrap gap-2">
                                                     {note.importantTerms.slice(0, 4).map((term, i) => (
                                                         <span
                                                             key={i}
-                                                            className="text-[10px] font-bold bg-white/5 text-slate-300 border border-white/10 px-3 py-1.5 rounded-lg"
+                                                            className="text-[11px] font-bold bg-white/5 text-slate-200 border border-white/10 px-3 py-1.5 rounded-lg"
                                                         >
                                                             #{term}
                                                         </span>
@@ -478,21 +478,25 @@ function StatCard({
     const valueSuffix = label === "Mastery" ? "%" : "";
 
     return (
-        <div className={`p-6 rounded-[32px] border ${colors[color]} backdrop-blur-xl transition-all hover:scale-[1.02] hover:bg-white/5`}>
-            <div className="flex items-center gap-2 mb-4 opacity-70">
-                <div className="p-2 rounded-xl bg-white/5">
+        <div 
+            className={`p-6 rounded-[32px] border ${colors[color]} backdrop-blur-xl transition-all hover:scale-[1.02] hover:bg-white/5 outline-none focus-within:ring-2 focus-within:ring-white/20`}
+            role="status"
+            aria-label={`${label}: ${value}${valueSuffix}`}
+        >
+            <div className="flex items-center gap-2 mb-4 opacity-80">
+                <div className="p-2 rounded-xl bg-white/5" aria-hidden="true">
                     {icon}
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest">
+                <span className="text-[11px] font-black uppercase tracking-widest text-inherit">
                     {label}
                 </span>
             </div>
             <div className="space-y-1">
-                <p className="text-4xl font-black tracking-tighter">
+                <p className="text-4xl font-black tracking-tighter text-white">
                     {value}{valueSuffix}
                 </p>
                 {description && (
-                    <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest">{description}</p>
+                    <p className="text-[11px] font-bold opacity-60 uppercase tracking-widest text-slate-300">{description}</p>
                 )}
             </div>
         </div>

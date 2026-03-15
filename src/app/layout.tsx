@@ -2,10 +2,10 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+import MobileNav from "@/components/MobileNav";
 import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
-
 const APP_NAME = "NotePilot AI";
 const APP_DEFAULT_TITLE = "NotePilot AI - Your Personal Second Brain";
 const APP_TITLE_TEMPLATE = "%s | NotePilot AI";
@@ -69,7 +69,8 @@ export default function RootLayout({
         {/* Mobile Top Bar */}
         <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-black/80 backdrop-blur-xl border-b border-white/5 z-50 flex items-center justify-between px-6">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-sm shadow-lg shadow-indigo-500/20">N</div>
+            <MobileNav />
+            <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-sm shadow-lg shadow-indigo-500/20" aria-hidden="true">N</div>
             <span className="font-black tracking-tight">NotePilot</span>
           </div>
         </div>

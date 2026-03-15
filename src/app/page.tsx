@@ -240,17 +240,17 @@ export default function Landing() {
       {!summary ? (
         <div className="w-full max-w-4xl space-y-12 text-center relative z-10">
           <div className="space-y-4 animate-in fade-in slide-in-from-top-10 duration-1000">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em]">
-              <Sparkles className="w-3 h-3" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-bold text-indigo-300 uppercase tracking-[0.2em] shadow-inner">
+              <Sparkles className="w-3 h-3" aria-hidden="true" />
               Intelligence Engine v2.0
             </div>
-            <h1 className="text-7xl md:text-9xl font-black tracking-tighter text-white leading-[0.9]">
+            <h1 className="text-6xl md:text-9xl font-black tracking-tighter text-white leading-[0.9]">
               Chaos into <br />
-              <span className="bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-indigo-300 via-purple-300 to-pink-300 bg-clip-text text-transparent">
                 Clarity.
               </span>
             </h1>
-            <p className="text-zinc-400 text-xl md:text-2xl font-medium max-w-2xl mx-auto leading-relaxed">
+            <p className="text-slate-300 text-lg md:text-2xl font-medium max-w-2xl mx-auto leading-relaxed">
               Drop your messy folders. Let AI build your second brain, 
               generate knowledge maps, and create study sets in seconds.
             </p>
@@ -259,20 +259,22 @@ export default function Landing() {
           <div className="flex flex-col md:flex-row items-center justify-center gap-6 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-300">
             <button 
               onClick={() => document.querySelector('input')?.click()}
-              className="group relative px-10 py-6 bg-white text-black rounded-3xl font-black text-xl transition-all hover:scale-[1.02] active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.1)] overflow-hidden"
+              className="group relative px-10 py-6 bg-white text-black rounded-3xl font-black text-xl transition-all hover:scale-[1.02] active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.1)] overflow-hidden focus-visible:ring-4 focus-visible:ring-indigo-500/50 outline-none"
+              aria-label="Upload your files to start"
             >
               <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
               <span className="relative flex items-center gap-3">
                 Upload My Brain
-                <UploadCloud className="w-6 h-6" />
+                <UploadCloud className="w-6 h-6" aria-hidden="true" />
               </span>
             </button>
             <button 
               onClick={loadDemo}
-              className="px-10 py-6 bg-white/5 border border-white/10 text-slate-300 rounded-3xl font-black text-xl hover:bg-white/10 hover:border-white/20 transition-all flex items-center gap-3 backdrop-blur-md"
+              className="px-10 py-6 bg-white/5 border border-white/10 text-slate-200 rounded-3xl font-black text-xl hover:bg-white/10 hover:border-white/20 transition-all active:scale-95 flex items-center gap-3 backdrop-blur-md focus-visible:ring-4 focus-visible:ring-white/30 outline-none"
+              aria-label="Explore the demo experience"
             >
               Explore Demo
-              <Sparkles className="w-6 h-6" />
+              <Sparkles className="w-6 h-6" aria-hidden="true" />
             </button>
           </div>
 
@@ -288,19 +290,19 @@ export default function Landing() {
               <div className="w-64 h-64 rounded-full border border-indigo-500/5 animate-ping duration-3000" />
             </div>
 
-            <div className="p-10 rounded-[40px] bg-indigo-500/10 text-indigo-400 group-hover:scale-110 group-hover:shadow-[0_0_40px_rgba(99,102,241,0.2)] transition-all duration-700">
+            <div className="p-10 rounded-[40px] bg-indigo-500/10 text-indigo-300 group-hover:scale-110 group-hover:shadow-[0_0_40px_rgba(99,102,241,0.2)] transition-all duration-700">
               {isUploading ? (
-                <Loader2 className="w-16 h-16 animate-spin" />
+                <Loader2 className="w-16 h-16 animate-spin" aria-hidden="true" />
               ) : (
-                <UploadCloud className="w-16 h-16" />
+                <UploadCloud className="w-16 h-16" aria-hidden="true" />
               )}
             </div>
             
             <div className="space-y-2 relative z-10 text-center">
-              <p className="text-3xl font-black tracking-tight">
+              <p className="text-3xl font-black tracking-tight text-white">
                 {isUploading ? "Synthesizing Knowledge..." : "Drop files or folders here"}
               </p>
-              <p className="text-slate-500 font-bold text-sm tracking-[0.2em] uppercase opacity-60">
+              <p className="text-slate-400 font-bold text-sm tracking-[0.2em] uppercase opacity-80">
                 AI supports PDF, MD, TXT, DOCX
               </p>
             </div>
@@ -358,9 +360,9 @@ export default function Landing() {
                   Evolution
                 </h3>
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center text-sm font-bold">
+                  <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider">
                     <span className="text-slate-400 italic">Messy Chaos</span>
-                    <span className="text-indigo-400">Structured Topics</span>
+                    <span className="text-indigo-300">Structured Topics</span>
                   </div>
                   <div className="h-3 bg-white/5 rounded-full overflow-hidden flex">
                     <div className="h-full bg-indigo-500 w-[70%]" />
@@ -376,7 +378,7 @@ export default function Landing() {
                   <Sparkles className="w-4 h-4 text-purple-500" /> AI Insights
                 </h3>
                 <div className="p-6 rounded-2xl bg-white/5 border border-white/5">
-                  <p className="text-slate-400 text-sm italic">
+                  <p className="text-slate-300 text-sm italic leading-relaxed">
                     &quot;{summary.topInsight}&quot;
                   </p>
                 </div>
@@ -390,7 +392,7 @@ export default function Landing() {
               className="flex-1 py-6 bg-white text-black rounded-[28px] text-2xl font-black transition-all hover:scale-105 flex items-center justify-center gap-4 shadow-3xl shadow-white/5"
             >
               Enter Second Brain
-              <ArrowRight className="w-8 h-8" />
+              <ArrowRight className="w-8 h-8" aria-hidden="true" />
             </button>
             <button
               onClick={() => {
@@ -401,10 +403,11 @@ export default function Landing() {
                   alert('Ready to share!');
                 }
               }}
-              className="px-10 py-6 bg-indigo-600 text-white rounded-[28px] text-xl font-black transition-all hover:bg-indigo-500 flex items-center justify-center gap-4 shadow-3xl shadow-indigo-500/20"
+              className="px-10 py-6 bg-indigo-600 text-white rounded-[28px] text-xl font-black transition-all hover:bg-indigo-500 flex items-center justify-center gap-4 shadow-3xl shadow-indigo-500/20 active:scale-95 focus-visible:ring-4 focus-visible:ring-indigo-400 outline-none"
+              aria-label="Share your organized knowledge"
             >
               Share with Friends
-              <Share2 className="w-6 h-6" />
+              <Share2 className="w-6 h-6" aria-hidden="true" />
             </button>
           </div>
         </div>

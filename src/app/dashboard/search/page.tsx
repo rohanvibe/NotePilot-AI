@@ -56,12 +56,12 @@ export default function SearchPage() {
     return (
         <div className="max-w-4xl mx-auto space-y-12 py-12 px-6">
             <header className="space-y-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-400 uppercase tracking-widest">
-                    <Sparkles className="w-3 h-3" />
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-blue-300 uppercase tracking-widest shadow-inner">
+                    <Sparkles className="w-3 h-3" aria-hidden="true" />
                     Concept-Based Retrieval
                 </div>
-                <h1 className="text-5xl font-black">Semantic Search</h1>
-                <p className="text-slate-400 text-lg">
+                <h1 className="text-4xl md:text-5xl font-black text-white">Semantic Search</h1>
+                <p className="text-slate-300 text-lg md:text-xl font-medium max-w-2xl leading-relaxed">
                     Search your notes using natural language. We find meanings, not just keywords.
                 </p>
             </header>
@@ -112,24 +112,24 @@ export default function SearchPage() {
                             >
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="space-y-1">
-                                        <div className="flex items-center gap-2 text-[10px] font-bold text-blue-400 uppercase tracking-widest">
-                                            <Hash className="w-3 h-3" />{" "}
+                                        <div className="flex items-center gap-2 text-xs font-bold text-blue-300 uppercase tracking-widest opacity-90">
+                                            <Hash className="w-3 h-3" aria-hidden="true" />{" "}
                                             {result.note.topic || "Uncategorized"}
                                         </div>
                                         <h3 className="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors">
                                             {result.note.name}
                                         </h3>
                                     </div>
-                                    <div className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-400 text-[10px] font-black uppercase tracking-tighter">
+                                    <div className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-300 text-xs font-black uppercase tracking-tighter">
                                         {Math.round(result.relevanceScore * 100)}% Match
                                     </div>
                                 </div>
-                                <p className="text-slate-400 text-sm leading-relaxed mb-6 italic">
+                                <p className="text-slate-200 text-sm leading-relaxed mb-6 italic opacity-90 bg-black/20 p-4 rounded-xl border border-white/5">
                                     &quot;{result.reason}&quot;
                                 </p>
-                                <div className="flex items-center gap-2 text-zinc-400 text-xs font-medium opacity-80">
-                                    <FileText className="w-4 h-4" />
-                                    {result.note.summary?.slice(0, 150)}...
+                                <div className="flex items-center gap-2 text-slate-400 text-sm font-medium opacity-90">
+                                    <FileText className="w-4 h-4 text-blue-400" aria-hidden="true" />
+                                    <span className="line-clamp-1">{result.note.summary?.slice(0, 150)}...</span>
                                 </div>
                             </div>
                         ))}

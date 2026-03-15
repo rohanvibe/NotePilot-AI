@@ -126,7 +126,7 @@ export default function Chat() {
                             Brain Chat
                             <Sparkles className="w-4 h-4 text-indigo-500 animate-pulse" />
                         </h1>
-                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest opacity-80">
+                        <p className="text-xs font-bold text-slate-300 uppercase tracking-widest opacity-90">
                             {notes.length} Knowledge Sources
                         </p>
                     </div>
@@ -140,9 +140,9 @@ export default function Chat() {
                         <div className="w-32 h-32 rounded-[40px] bg-indigo-600/5 border border-indigo-500/10 flex items-center justify-center mb-4">
                             <Bot className="w-16 h-16 text-indigo-500 opacity-50" />
                         </div>
-                        <div className="space-y-2">
-                            <h2 className="text-3xl font-black">AI Tutor Engaged</h2>
-                            <p className="text-slate-500 max-w-sm">
+                        <div className="space-y-3">
+                            <h2 className="text-3xl font-black text-white">AI Tutor Engaged</h2>
+                            <p className="text-slate-300 max-w-sm mx-auto font-medium">
                                 Ask complex questions about your synthesized knowledge.
                             </p>
                         </div>
@@ -194,11 +194,11 @@ export default function Chat() {
                                             <div
                                                 key={sid}
                                                 onClick={() => router.push(`/dashboard?noteId=${sid}`)}
-                                                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-bold text-slate-400 hover:text-white transition-all cursor-pointer"
+                                                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-300 hover:text-white transition-all cursor-pointer shadow-sm group/source"
                                             >
-                                                <FileText className="w-3 h-3" />
-                                                {note?.name || "Referenced Source"}
-                                                <ExternalLink className="w-2.5 h-2.5 opacity-50" />
+                                                <FileText className="w-3.5 h-3.5 text-indigo-400" aria-hidden="true" />
+                                                <span className="opacity-90">{note?.name || "Referenced Source"}</span>
+                                                <ExternalLink className="w-2.5 h-2.5 opacity-40 group-hover/source:opacity-100 transition-opacity" aria-hidden="true" />
                                             </div>
                                         );
                                     })}
@@ -259,7 +259,7 @@ function QuickQuestion({ q, setInput }: { q: string; setInput: (v: string) => vo
     return (
         <button
             onClick={() => setInput(q)}
-            className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-xs font-bold text-zinc-400 hover:text-white transition-all opacity-80"
+            className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-xs font-bold text-slate-300 hover:text-white transition-all shadow-sm active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
         >
             {q}
         </button>
