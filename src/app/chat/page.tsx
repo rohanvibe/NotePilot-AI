@@ -126,7 +126,7 @@ export default function Chat() {
                             Brain Chat
                             <Sparkles className="w-4 h-4 text-indigo-500 animate-pulse" />
                         </h1>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest opacity-80">
                             {notes.length} Knowledge Sources
                         </p>
                     </div>
@@ -234,7 +234,8 @@ export default function Chat() {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Ask your second brain..."
-                        className="w-full bg-white/5 border border-white/10 focus:border-indigo-500/50 rounded-[32px] pl-16 pr-32 py-6 text-xl text-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all placeholder:text-slate-600"
+                        className="w-full bg-white/5 border border-white/10 focus:border-indigo-500/50 rounded-[32px] pl-16 pr-32 py-6 text-xl text-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all placeholder:text-zinc-600"
+                        aria-label="Ask your second brain"
                     />
                     <button
                         type="submit"
@@ -258,7 +259,7 @@ function QuickQuestion({ q, setInput }: { q: string; setInput: (v: string) => vo
     return (
         <button
             onClick={() => setInput(q)}
-            className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-xs font-bold text-slate-400 hover:text-white transition-all"
+            className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-xs font-bold text-zinc-400 hover:text-white transition-all opacity-80"
         >
             {q}
         </button>

@@ -76,6 +76,7 @@ export default function SearchPage() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     className="w-full bg-white/5 border border-white/10 rounded-[32px] py-6 pl-16 pr-32 text-xl focus:outline-none focus:ring-4 focus:ring-blue-500/20 transition-all backdrop-blur-xl"
+                    aria-label="Semantic search query"
                 />
                 <button
                     type="submit"
@@ -95,7 +96,7 @@ export default function SearchPage() {
                 {isSearching && (
                     <div className="py-20 text-center space-y-4">
                         <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mx-auto" />
-                        <p className="text-slate-500 font-medium animate-pulse">
+                        <p className="text-zinc-400 font-medium animate-pulse opacity-90">
                             Analyzing conceptual relationships...
                         </p>
                     </div>
@@ -126,7 +127,7 @@ export default function SearchPage() {
                                 <p className="text-slate-400 text-sm leading-relaxed mb-6 italic">
                                     &quot;{result.reason}&quot;
                                 </p>
-                                <div className="flex items-center gap-2 text-slate-500 text-xs font-medium">
+                                <div className="flex items-center gap-2 text-zinc-400 text-xs font-medium opacity-80">
                                     <FileText className="w-4 h-4" />
                                     {result.note.summary?.slice(0, 150)}...
                                 </div>
@@ -137,7 +138,7 @@ export default function SearchPage() {
 
                 {!isSearching && results.length === 0 && query && (
                     <div className="py-20 text-center border-2 border-dashed border-white/5 rounded-[40px]">
-                        <p className="text-slate-500">
+                        <p className="text-zinc-400 font-medium opacity-80">
                             No deep conceptual matches found for &quot;{query}&quot;.
                         </p>
                     </div>

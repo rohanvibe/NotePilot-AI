@@ -8,4 +8,8 @@ const withSerwist = withSerwistInit({
 export default withSerwist({
   reactStrictMode: true,
   serverExternalPackages: ["pdf-parse", "mammoth"],
+  // Optimize for modern browsers
+  experimental: {
+    optimizePackageImports: ["lucide-react", "framer-motion"],
+  },
 });

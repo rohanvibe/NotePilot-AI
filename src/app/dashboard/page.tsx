@@ -125,7 +125,7 @@ export default function Dashboard() {
                     <h1 className="text-4xl font-bold bg-linear-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent">
                         Dashboard
                     </h1>
-                    <p className="text-slate-500 font-medium">
+                    <p className="text-zinc-400 font-medium">
                         Managing your digital knowledge base
                     </p>
                 </header>
@@ -140,51 +140,60 @@ export default function Dashboard() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all backdrop-blur-md"
+                        aria-label="Search concepts, topics, or notes"
                     />
                 </div>
             </div>
 
             {/* Chaos to Knowledge Summary */}
-            <section className="bg-indigo-600/10 border border-indigo-500/20 rounded-[40px] p-8 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-110 transition-transform duration-700">
-                    <Sparkles className="w-48 h-48 text-indigo-400" />
-                </div>
-                <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
-                    <div className="space-y-4 max-w-md">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
-                            <CheckCircle2 className="w-3 h-3" />
-                            Transformation Complete
+            <section className="relative p-1 overflow-hidden rounded-[48px] bg-linear-to-br from-indigo-500/10 via-purple-500/5 to-transparent border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                {/* Abstract Shape */}
+                <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-500/20 blur-[80px] rounded-full animate-pulse" />
+                
+                <div className="relative z-10 p-10 flex flex-col lg:flex-row items-center gap-12">
+                    <div className="space-y-6 max-w-lg">
+                        <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-xs font-black text-indigo-400 uppercase tracking-[0.2em] shadow-inner">
+                            <Sparkles className="w-4 h-4" />
+                            Second Brain Active
                         </div>
-                        <h2 className="text-3xl font-bold">Organized Notes</h2>
-                        <p className="text-slate-400 leading-relaxed">
-                            We&apos;ve automatically sorted your files into topics and summaries.
+                        <h2 className="text-5xl font-black tracking-tight text-white leading-tight">
+                            Your knowledge, <br />
+                            <span className="text-indigo-400">synthesized.</span>
+                        </h2>
+                        <p className="text-slate-400 text-lg font-medium leading-relaxed">
+                            NotePilot has decoded your messy inputs into a structured hierarchy. 
+                            Ready for deep learning and discovery.
                         </p>
                     </div>
 
-                    <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+                    <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-6 w-full">
                         <StatCard
-                            icon={<Files className="w-4 h-4" />}
-                            label="Files"
+                            icon={<Files className="w-5 h-5" />}
+                            label="Archive"
                             value={notes.length}
                             color="blue"
+                            description="Source docs"
                         />
                         <StatCard
-                            icon={<Tags className="w-4 h-4" />}
-                            label="Topics"
+                            icon={<Tags className="w-5 h-5" />}
+                            label="Domains"
                             value={Object.keys(groupedNotes).length}
                             color="purple"
+                            description="Knowledge areas"
                         />
                         <StatCard
-                            icon={<Zap className="w-4 h-4" />}
-                            label="Cards"
+                            icon={<Zap className="w-5 h-5" />}
+                            label="Insights"
                             value={flashcards.length}
                             color="amber"
+                            description="Flashcards"
                         />
                         <StatCard
-                            icon={<GraduationCap className="w-4 h-4" />}
+                            icon={<GraduationCap className="w-5 h-5" />}
                             label="Mastery"
                             value={Math.min(100, notes.length * 5)}
                             color="emerald"
+                            description="Total progress"
                         />
                     </div>
                 </div>
@@ -451,28 +460,41 @@ function StatCard({
     label,
     value,
     color,
+    description,
 }: {
     icon: React.ReactNode;
     label: string;
-    value: number;
+    value: number | string;
     color: string;
+    description?: string;
 }) {
     const colors: Record<string, string> = {
-        blue: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-        purple: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-        amber: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-        emerald: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+        blue: "bg-blue-500/10 text-blue-400 border-blue-500/20 shadow-blue-500/5",
+        purple: "bg-purple-500/10 text-purple-400 border-purple-500/20 shadow-purple-500/5",
+        amber: "bg-amber-500/10 text-amber-400 border-amber-500/20 shadow-amber-500/5",
+        emerald: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/5",
     };
 
+    const valueSuffix = label === "Mastery" ? "%" : "";
+
     return (
-        <div className={`p-6 rounded-3xl border ${colors[color]} backdrop-blur-md`}>
-            <div className="flex items-center gap-2 mb-3 opacity-60">
-                {icon}
+        <div className={`p-6 rounded-[32px] border ${colors[color]} backdrop-blur-xl transition-all hover:scale-[1.02] hover:bg-white/5`}>
+            <div className="flex items-center gap-2 mb-4 opacity-70">
+                <div className="p-2 rounded-xl bg-white/5">
+                    {icon}
+                </div>
                 <span className="text-[10px] font-black uppercase tracking-widest">
                     {label}
                 </span>
             </div>
-            <p className="text-3xl font-black tracking-tighter">{value}</p>
+            <div className="space-y-1">
+                <p className="text-4xl font-black tracking-tighter">
+                    {value}{valueSuffix}
+                </p>
+                {description && (
+                    <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest">{description}</p>
+                )}
+            </div>
         </div>
     );
 }

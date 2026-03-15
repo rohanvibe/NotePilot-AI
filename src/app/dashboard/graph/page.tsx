@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 const KnowledgeGraph = dynamic(() => import("@/components/KnowledgeGraph"), {
     ssr: false,
     loading: () => (
-        <div className="w-full h-[600px] flex items-center justify-center bg-slate-900/50 rounded-2xl border border-white/10 text-slate-500 font-medium">
+        <div className="w-full h-[600px] flex items-center justify-center bg-slate-900/50 rounded-2xl border border-white/10 text-zinc-400 font-medium opacity-80">
             Initializing Graph...
         </div>
     ),

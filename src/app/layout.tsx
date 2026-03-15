@@ -58,21 +58,29 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} bg-zinc-950 text-zinc-100 min-h-screen flex antialiased`}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
+      <body className={`${inter.className} bg-zinc-950 text-zinc-100 min-h-screen flex antialiased selection:bg-indigo-500/30`}>
+        {/* Grain Effect */}
+        <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+        
         {/* Mobile Top Bar */}
         <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-black/80 backdrop-blur-xl border-b border-white/5 z-50 flex items-center justify-between px-6">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-sm">N</div>
+            <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-sm shadow-lg shadow-indigo-500/20">N</div>
             <span className="font-black tracking-tight">NotePilot</span>
           </div>
         </div>
 
-        <Sidebar className="w-64 flex-none border-r border-white/5 bg-black/40 backdrop-blur-xl hidden md:block" />
+        <Sidebar className="w-64 flex-none border-r border-white/5 bg-black/40 backdrop-blur-xl hidden md:block z-10" />
 
-        <main className="flex-1 min-w-0 flex flex-col relative h-screen overflow-y-auto pt-16 md:pt-0">
+        <main className="flex-1 min-w-0 flex flex-col relative h-screen overflow-y-auto pt-16 md:pt-0 z-10">
           {children}
         </main>
-        <Script id="register-sw" strategy="afterInteractive">
+        
+        <Script id="register-sw" strategy="lazyOnload">
           {`
             if ('serviceWorker' in navigator) {
               window.addEventListener('load', async function() {

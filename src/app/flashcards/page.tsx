@@ -71,7 +71,7 @@ export default function FlashcardsPage() {
                     <h1 className="text-4xl font-black bg-linear-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
                         Memory Engine
                     </h1>
-                    <p className="text-slate-500 font-medium tracking-tight">
+                    <p className="text-zinc-400 font-medium tracking-tight opacity-90">
                         Active recall via Spaced Repetition (SM-2)
                     </p>
                 </div>
@@ -130,13 +130,13 @@ export default function FlashcardsPage() {
                                             <p className="font-bold text-slate-200 line-clamp-1">
                                                 {card.front}
                                             </p>
-                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1">
+                                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest opacity-80 flex items-center gap-1">
                                                 <Bookmark className="w-3 h-3" />{" "}
                                                 {note?.name || "General Knowledge"}
                                             </p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-[10px] font-bold text-slate-500 uppercase">
+                                            <p className="text-[10px] font-bold text-zinc-400 uppercase opacity-80">
                                                 Review In
                                             </p>
                                             <p className="text-xs font-black text-amber-500">
@@ -170,8 +170,8 @@ export default function FlashcardsPage() {
                         </section>
 
                         <div className="p-8 bg-white/5 rounded-[40px] border border-white/10 flex flex-col items-center text-center space-y-4">
-                            <GraduationCap className="w-12 h-12 text-slate-700" />
-                            <p className="text-slate-500 font-medium text-sm">
+                            <GraduationCap className="w-12 h-12 text-zinc-700" />
+                            <p className="text-zinc-400 font-medium text-sm opacity-90">
                                 Consistent daily review increases retention by up to 80%.
                             </p>
                         </div>
@@ -187,7 +187,7 @@ export default function FlashcardsPage() {
                             <XCircle className="w-6 h-6" />
                         </button>
                         <div className="text-center">
-                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest opacity-80">
                                 Progress
                             </p>
                             <p className="text-sm font-black">

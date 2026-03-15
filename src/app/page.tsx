@@ -232,64 +232,79 @@ export default function Landing() {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 space-y-12">
+    <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 space-y-12 relative overflow-hidden">
+      {/* Background Glows */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/20 blur-[120px] rounded-full" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full" />
+      
       {!summary ? (
-        <div className="w-full max-w-4xl space-y-12 text-center">
-          <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-700">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
+        <div className="w-full max-w-4xl space-y-12 text-center relative z-10">
+          <div className="space-y-4 animate-in fade-in slide-in-from-top-10 duration-1000">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em]">
               <Sparkles className="w-3 h-3" />
-              AI Powered v2.0
+              Intelligence Engine v2.0
             </div>
-            <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white">
-              Organize Messy{" "}
+            <h1 className="text-7xl md:text-9xl font-black tracking-tighter text-white leading-[0.9]">
+              Chaos into <br />
               <span className="bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Notes.
+                Clarity.
               </span>
             </h1>
-            <p className="text-slate-500 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
-              Don&apos;t waste time sorting folders. Drop your files here and let AI 
-              organize, summarize, and create quizzes for you in seconds.
+            <p className="text-zinc-400 text-xl md:text-2xl font-medium max-w-2xl mx-auto leading-relaxed">
+              Drop your messy folders. Let AI build your second brain, 
+              generate knowledge maps, and create study sets in seconds.
             </p>
           </div>
 
-          <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-6 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-300">
             <button 
               onClick={() => document.querySelector('input')?.click()}
-              className="px-8 py-5 bg-white text-black rounded-3xl font-black text-lg hover:scale-105 transition-all shadow-2xl flex items-center gap-3"
+              className="group relative px-10 py-6 bg-white text-black rounded-3xl font-black text-xl transition-all hover:scale-[1.02] active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.1)] overflow-hidden"
             >
-              Start for Free
-              <UploadCloud className="w-5 h-5" />
+              <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+              <span className="relative flex items-center gap-3">
+                Upload My Brain
+                <UploadCloud className="w-6 h-6" />
+              </span>
             </button>
             <button 
               onClick={loadDemo}
-              className="px-8 py-5 bg-white/5 border border-white/10 text-slate-400 rounded-3xl font-black text-lg hover:bg-white/10 transition-all flex items-center gap-3"
+              className="px-10 py-6 bg-white/5 border border-white/10 text-slate-300 rounded-3xl font-black text-xl hover:bg-white/10 hover:border-white/20 transition-all flex items-center gap-3 backdrop-blur-md"
             >
-              Try with Demo
-              <Sparkles className="w-5 h-5" />
+              Explore Demo
+              <Sparkles className="w-6 h-6" />
             </button>
           </div>
 
           <div
             onDragOver={handleDragOver}
             onDrop={onDrop}
-            className="relative group h-80 rounded-[64px] border-4 border-dashed border-white/5 hover:border-indigo-500/50 bg-white/5 transition-all flex flex-col items-center justify-center space-y-6 cursor-pointer overflow-hidden shadow-2xl"
+            className="relative group h-96 rounded-[64px] border-2 border-dashed border-white/10 hover:border-indigo-500/50 bg-white/2 hover:bg-indigo-500/3 transition-all flex flex-col items-center justify-center space-y-6 cursor-pointer overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-1000 delay-500"
           >
             <div className="absolute inset-0 bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="p-8 rounded-[32px] bg-indigo-500/10 text-indigo-400 group-hover:scale-110 transition-transform duration-500">
+            
+            {/* Pulsing Ring */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-64 h-64 rounded-full border border-indigo-500/5 animate-ping duration-3000" />
+            </div>
+
+            <div className="p-10 rounded-[40px] bg-indigo-500/10 text-indigo-400 group-hover:scale-110 group-hover:shadow-[0_0_40px_rgba(99,102,241,0.2)] transition-all duration-700">
               {isUploading ? (
-                <Loader2 className="w-12 h-12 animate-spin" />
+                <Loader2 className="w-16 h-16 animate-spin" />
               ) : (
-                <UploadCloud className="w-12 h-12" />
+                <UploadCloud className="w-16 h-16" />
               )}
             </div>
-            <div className="space-y-2 relative z-10">
-              <p className="text-2xl font-black">
-                {isUploading ? "Processing Brain..." : "Drop files or folders here"}
+            
+            <div className="space-y-2 relative z-10 text-center">
+              <p className="text-3xl font-black tracking-tight">
+                {isUploading ? "Synthesizing Knowledge..." : "Drop files or folders here"}
               </p>
-              <p className="text-slate-500 font-bold text-sm tracking-tight uppercase">
-                Supports .txt, .md, .pdf, .docx
+              <p className="text-slate-500 font-bold text-sm tracking-[0.2em] uppercase opacity-60">
+                AI supports PDF, MD, TXT, DOCX
               </p>
             </div>
+
             <input
               type="file"
               multiple
@@ -297,6 +312,7 @@ export default function Landing() {
               webkitdirectory=""
               className="absolute inset-0 opacity-0 cursor-pointer"
               onChange={handleFileInput}
+              aria-label="Upload folders or files"
             />
           </div>
 
