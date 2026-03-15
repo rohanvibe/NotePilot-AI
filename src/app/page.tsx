@@ -232,7 +232,7 @@ export default function Landing() {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 space-y-12 relative overflow-hidden">
+    <div className="flex-1 flex flex-col items-center justify-start p-6 md:p-12 pt-24 md:pt-32 space-y-12 relative overflow-hidden">
       {/* Background Glows */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/20 blur-[120px] rounded-full" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full" />

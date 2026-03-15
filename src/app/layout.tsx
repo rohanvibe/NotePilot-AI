@@ -77,7 +77,7 @@ export default function RootLayout({
 
         <Sidebar className="w-64 flex-none border-r border-white/5 bg-black/40 backdrop-blur-xl hidden md:block z-10" />
 
-        <main className="flex-1 min-w-0 flex flex-col relative h-screen overflow-y-auto pt-16 md:pt-0 z-10">
+        <main className="flex-1 min-w-0 flex flex-col relative h-dvh overflow-y-auto pt-16 md:pt-0 z-10">
           {children}
         </main>
         
