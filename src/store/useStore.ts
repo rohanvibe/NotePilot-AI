@@ -70,6 +70,11 @@ interface AppState {
     flashcards: Flashcard[];
     relationships: Relationship[];
     courses: Course[];
+    xp: number;
+    level: number;
+    streak: number;
+    lastActive: number;
+    totalTimeSaved: number;
     addNotes: (notes: Note[]) => void;
     updateNote: (id: string, data: Partial<Note>) => void;
     deleteNote: (id: string) => void;
@@ -81,6 +86,9 @@ interface AppState {
     addRelationships: (relationships: Relationship[]) => void;
     setCourses: (courses: Course[]) => void;
     addCourse: (course: Course) => void;
+    addXp: (amount: number) => void;
+    addTimeSaved: (minutes: number) => void;
+    updateStreak: () => void;
     clearAll: () => void;
 }
 
@@ -91,7 +99,22 @@ export const useStore = create<AppState>()(
             flashcards: [],
             relationships: [],
             courses: [],
-            addNotes: (newNotes) => set((state) => ({ notes: [...state.notes, ...newNotes] })),
+            xp: 0,
+            level: 1,
+            streak: 0,
+            lastActive: Date.now(),
+            totalTimeSaved: 0,
+            addNotes: (newNotes) => set((state) => {
+                const xpGain = newNotes.length * 50;
+                const newXp = state.xp + xpGain;
+                const newLevel = Math.floor(newXp / 1000) + 1;
+                return { 
+                    notes: [...state.notes, ...newNotes],
+                    xp: newXp,
+                    level: newLevel,
+                    totalTimeSaved: state.totalTimeSaved + (newNotes.length * 15) // Assume 15m saved per doc
+                };
+            }),
             updateNote: (id, data) =>
                 set((state) => ({
                     notes: state.notes.map((n) => (n.id === id ? { ...n, ...data, updatedAt: Date.now() } : n)),
@@ -100,18 +123,42 @@ export const useStore = create<AppState>()(
                 notes: state.notes.filter((n) => n.id !== id),
                 flashcards: state.flashcards.filter((f) => f.noteId !== id)
             })),
-            addFlashcards: (newCards) => set((state) => ({ flashcards: [...state.flashcards, ...newCards] })),
+            addFlashcards: (newCards) => set((state) => ({ 
+                flashcards: [...state.flashcards, ...newCards],
+                xp: state.xp + (newCards.length * 10)
+            })),
             updateFlashcard: (id, data) =>
-                set((state) => ({
-                    flashcards: state.flashcards.map((f) => (f.id === id ? { ...f, ...data } : f)),
-                })),
+                set((state) => {
+                    const isSuccess = data.difficulty && data.difficulty !== 'hard';
+                    return {
+                        flashcards: state.flashcards.map((f) => (f.id === id ? { ...f, ...data } : f)),
+                        xp: isSuccess ? state.xp + 20 : state.xp + 5
+                    };
+                }),
             setFlashcards: (flashcards) => set({ flashcards }),
             setNotes: (notes) => set({ notes }),
             setRelationships: (relationships) => set({ relationships }),
             addRelationships: (newRels) => set((state) => ({ relationships: [...state.relationships, ...newRels] })),
             setCourses: (courses) => set({ courses }),
             addCourse: (course) => set((state) => ({ courses: [...state.courses, course] })),
-            clearAll: () => set({ notes: [], flashcards: [], relationships: [], courses: [] }),
+            addXp: (amount) => set((state) => {
+                const newXp = state.xp + amount;
+                const newLevel = Math.floor(newXp / 1000) + 1;
+                return { xp: newXp, level: newLevel };
+            }),
+            addTimeSaved: (minutes) => set((state) => ({ totalTimeSaved: state.totalTimeSaved + minutes })),
+            updateStreak: () => set((state) => {
+                const now = Date.now();
+                const diff = now - state.lastActive;
+                const oneDay = 24 * 60 * 60 * 1000;
+                
+                if (diff < oneDay * 2) {
+                    return { streak: state.streak + 1, lastActive: now };
+                } else {
+                    return { streak: 1, lastActive: now };
+                }
+            }),
+            clearAll: () => set({ notes: [], flashcards: [], relationships: [], courses: [], xp: 0, level: 1, streak: 0, totalTimeSaved: 0 }),
         }),
         {
             name: "ai-notes-storage-v2",

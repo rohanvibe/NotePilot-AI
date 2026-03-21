@@ -3,10 +3,13 @@
 import Link from "next/link";
 import { FolderHeart, LayoutDashboard, Layers, MessageSquare, Settings, Share2, Brain, Search, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useStore } from "@/store/useStore";
 import { usePathname } from "next/navigation";
 
 export default function Sidebar({ className }: { className?: string }) {
     const pathname = usePathname();
+    const { level, xp, streak } = useStore();
+    const progress = (xp % 1000) / 10;
 
     return (
         <aside 
@@ -21,6 +24,27 @@ export default function Sidebar({ className }: { className?: string }) {
                 <div className="flex flex-col">
                     <span className="text-xl font-black tracking-tight text-white leading-none">NotePilot</span>
                     <span className="text-xs font-bold text-indigo-300 uppercase tracking-[0.2em] mt-1 pl-0.5 opacity-90">AI Engine v2.0</span>
+                </div>
+            </div>
+
+            {/* Level & XP Card */}
+            <div className="mx-2 mb-8 p-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 space-y-3">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div className="px-2 py-1 rounded-md bg-indigo-500 text-[10px] font-black text-white">LVL {level}</div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{xp % 1000} / 1000 XP</span>
+                    </div>
+                    {streak > 0 && (
+                        <div className="flex items-center gap-1 text-orange-400 font-black text-xs animate-bounce-slow">
+                            🔥 {streak}
+                        </div>
+                    )}
+                </div>
+                <div className="h-1.5 w-full bg-indigo-500/10 rounded-full overflow-hidden">
+                    <div 
+                        className="h-full bg-indigo-500 transition-all duration-1000" 
+                        style={{ width: `${progress}%` }} 
+                    />
                 </div>
             </div>
 

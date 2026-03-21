@@ -12,6 +12,11 @@ import {
   ShieldCheck,
   X,
   Share2,
+  Clock,
+  Trophy,
+  ClipboardCheck,
+  Zap,
+  FileText,
 } from "lucide-react";
 import { useStore } from "@/store/useStore";
 
@@ -60,13 +65,15 @@ const traverseFileTree = async (item: any): Promise<File[]> => {
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 export default function Landing() {
-  const { addNotes, addFlashcards, notes } = useStore();
+  const { addNotes, addFlashcards, notes, totalTimeSaved, level, xp } = useStore();
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPermission, setShowPermission] = useState(false);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [summary, setSummary] = useState<SummaryResult | null>(null);
+  const [pasteMode, setPasteMode] = useState(false);
+  const [pasteContent, setPasteContent] = useState("");
 
   const processFiles = useCallback(
     async (files: File[]) => {
@@ -256,6 +263,21 @@ export default function Landing() {
             </p>
           </div>
 
+          <div className="flex flex-wrap items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-5 duration-1000 delay-200">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 text-slate-300 font-bold text-xs">
+                <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                {totalTimeSaved}m Saved Total
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 text-slate-300 font-bold text-xs">
+                <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                Level {level} Architect
+            </div>
+             <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 font-bold text-xs">
+                <Zap className="w-3.5 h-3.5" />
+                {xp} Intelligence XP
+            </div>
+          </div>
+
           <div className="flex flex-col md:flex-row items-center justify-center gap-6 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-300">
             <button 
               onClick={() => document.querySelector('input')?.click()}
@@ -278,44 +300,90 @@ export default function Landing() {
             </button>
           </div>
 
-          <div
-            onDragOver={handleDragOver}
-            onDrop={onDrop}
-            className="relative group h-96 rounded-[64px] border-2 border-dashed border-white/10 hover:border-indigo-500/50 bg-white/2 hover:bg-indigo-500/3 transition-all flex flex-col items-center justify-center space-y-6 cursor-pointer overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-1000 delay-500"
-          >
-            <div className="absolute inset-0 bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            
-            {/* Pulsing Ring */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-64 h-64 rounded-full border border-indigo-500/5 animate-ping duration-3000" />
-            </div>
+          <div className="w-full max-w-2xl space-y-4 mx-auto">
+            {!pasteMode ? (
+              <div
+                onDragOver={handleDragOver}
+                onDrop={onDrop}
+                className="relative group h-96 rounded-[64px] border-2 border-dashed border-white/10 hover:border-indigo-500/50 bg-white/2 hover:bg-indigo-500/3 transition-all flex flex-col items-center justify-center space-y-6 cursor-pointer overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-1000 delay-500"
+              >
+                <div className="absolute inset-0 bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                
+                {/* Pulsing Ring */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-64 h-64 rounded-full border border-indigo-500/5 animate-ping duration-3000" />
+                </div>
 
-            <div className="p-10 rounded-[40px] bg-indigo-500/10 text-indigo-300 group-hover:scale-110 group-hover:shadow-[0_0_40px_rgba(99,102,241,0.2)] transition-all duration-700">
-              {isUploading ? (
-                <Loader2 className="w-16 h-16 animate-spin" aria-hidden="true" />
-              ) : (
-                <UploadCloud className="w-16 h-16" aria-hidden="true" />
-              )}
-            </div>
-            
-            <div className="space-y-2 relative z-10 text-center">
-              <p className="text-3xl font-black tracking-tight text-white">
-                {isUploading ? "Synthesizing Knowledge..." : "Drop files or folders here"}
-              </p>
-              <p className="text-slate-400 font-bold text-sm tracking-[0.2em] uppercase opacity-80">
-                AI supports PDF, MD, TXT, DOCX
-              </p>
-            </div>
+                <div className="p-10 rounded-[40px] bg-indigo-500/10 text-indigo-300 group-hover:scale-110 group-hover:shadow-[0_0_40px_rgba(99,102,241,0.2)] transition-all duration-700">
+                  {isUploading ? (
+                    <Loader2 className="w-16 h-16 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <UploadCloud className="w-16 h-16" aria-hidden="true" />
+                  )}
+                </div>
+                
+                <div className="space-y-2 relative z-10 text-center">
+                  <p className="text-3xl font-black tracking-tight text-white">
+                    {isUploading ? "Synthesizing Knowledge..." : "Drop files or folders here"}
+                  </p>
+                  <p className="text-slate-400 font-bold text-sm tracking-[0.2em] uppercase opacity-80">
+                    AI supports PDF, MD, TXT, DOCX
+                  </p>
+                </div>
 
-            <input
-              type="file"
-              multiple
-              // @ts-expect-error webkitdirectory is non-standard but supported
-              webkitdirectory=""
-              className="absolute inset-0 opacity-0 cursor-pointer"
-              onChange={handleFileInput}
-              aria-label="Upload folders or files"
-            />
+                <input
+                  type="file"
+                  multiple
+                  // @ts-expect-error webkitdirectory is non-standard but supported
+                  webkitdirectory=""
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  onChange={handleFileInput}
+                  aria-label="Upload folders or files"
+                />
+              </div>
+            ) : (
+              <div className="w-full h-96 rounded-[56px] bg-white/5 border-2 border-indigo-500/30 p-10 flex flex-col gap-6 animate-in zoom-in duration-300">
+                <textarea 
+                    value={pasteContent}
+                    onChange={(e) => setPasteContent(e.target.value)}
+                    placeholder="Paste lecture notes, messy thoughts, or web clips..."
+                    className="flex-1 bg-transparent resize-none outline-none text-2xl text-white placeholder:text-slate-700 font-medium scrollbar-none"
+                    autoFocus
+                />
+                <div className="flex justify-between items-center pt-6 border-t border-white/5">
+                    <button 
+                        onClick={() => setPasteMode(false)}
+                        className="text-slate-500 hover:text-white font-black uppercase text-xs tracking-widest transition-colors"
+                    >
+                        Back to Files
+                    </button>
+                    <button 
+                        onClick={() => {
+                            if (pasteContent.trim()) {
+                                const blob = new Blob([pasteContent], { type: 'text/plain' });
+                                const file = new File([blob], `Instant Note ${new Date().toLocaleDateString()}.txt`, { type: 'text/plain' });
+                                setPendingFiles([file]);
+                                setShowPermission(true);
+                            }
+                        }}
+                        disabled={!pasteContent.trim() || isUploading}
+                        className="px-10 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-black text-lg flex items-center gap-3 transition-all shadow-xl shadow-indigo-500/20 disabled:opacity-50"
+                    >
+                        <Zap className="w-5 h-5" /> Organize Now
+                    </button>
+                </div>
+              </div>
+            )}
+
+            {!pasteMode && (
+                <button 
+                    onClick={() => setPasteMode(true)}
+                    className="mx-auto px-6 py-3 rounded-2xl bg-white/5 border border-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all text-sm font-bold flex items-center gap-2 group"
+                >
+                    <ClipboardCheck className="w-4 h-4 group-hover:text-indigo-400" />
+                    Or Paste Text Context
+                </button>
+            )}
           </div>
 
           {error && (
