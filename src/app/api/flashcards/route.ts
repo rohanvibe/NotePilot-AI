@@ -9,11 +9,16 @@ export async function POST(request: Request) {
             notesNames: string[];
         };
 
-        const systemPrompt = `You are a strict flashcard generator AI. Generate exactly 5 flashcards from the provided notes content. 
-Output them strictly as a JSON array of objects with 'front' and 'back' properties. Do not include ANY extra conversation, explanation, or markdown formatting around the output. Only output valid JSON resembling this exact array:
+        const systemPrompt = `You are a professional pedagogical AI. Generate exactly 8 flashcards from the provided notes content. 
+STRICT RULES:
+1. Question: Short, clear, and highly testable.
+2. Answer: Concise, no fluff, no long paragraphs.
+3. Content: Exact facts only. One concept per card.
+4. Formatting: Output as a strict JSON array of objects with 'front' and 'back' properties. No markdown.
+
+Example:
 [
-  { "front": "Question 1?", "back": "Answer 1" },
-  { "front": "Question 2?", "back": "Answer 2" }
+  { "front": "What is the primary function of Mitochondria?", "back": "Production of ATP (energy) via cellular respiration." }
 ]`;
 
         const instructions = `Generate flashcards from notes named: ${notesNames.join(

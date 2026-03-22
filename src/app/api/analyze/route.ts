@@ -85,13 +85,18 @@ export async function POST(request: Request) {
             }
 
             // Analyze using SambaNova
-            const systemPrompt = `You are an AI Notes Organizer.
+            const systemPrompt = `You are an AI Notes Organizer and Study Architect.
 Given the following messy notes text, analyze it and return a strict JSON object with this exact structure, nothing else:
 {
   "topic": "A short 1-4 word category/topic name",
-  "summary": "A 2-3 sentence overview of the contents",
-  "keyPoints": ["point 1", "point 2", "point 3"],
-  "importantTerms": ["term 1", "term 2"]
+  "summary": "A concise, 1-sentence executive summary",
+  "keyPoints": ["Structured bullet point 1", "Structured bullet point 2", "Structured bullet point 3"],
+  "importantTerms": ["term 1", "term 2"],
+  "studyPath": [
+    { "step": 1, "task": "Learn fundamental prerequisite A" },
+    { "step": 2, "task": "Master core concept B" },
+    { "step": 3, "task": "Practice advanced application C" }
+  ]
 }
 Ensure it is valid JSON. Do not include markdown formatting or backticks around the json, just output {"topic":...} directly.`;
 
@@ -107,6 +112,7 @@ Ensure it is valid JSON. Do not include markdown formatting or backticks around 
                 summary?: string;
                 keyPoints?: string[];
                 importantTerms?: string[];
+                studyPath?: Array<{ step: number; task: string }>;
             }
 
             try {
@@ -119,6 +125,7 @@ Ensure it is valid JSON. Do not include markdown formatting or backticks around 
                     summary: parsedAnalysis.summary || "Summary generation failed.",
                     keyPoints: parsedAnalysis.keyPoints || [],
                     importantTerms: parsedAnalysis.importantTerms || [],
+                    studyPath: parsedAnalysis.studyPath || [],
                     createdAt: Date.now(),
                 });
             } catch {
@@ -136,6 +143,7 @@ Ensure it is valid JSON. Do not include markdown formatting or backticks around 
                     summary: "Could not generate summary.",
                     keyPoints: [],
                     importantTerms: [],
+                    studyPath: [],
                     createdAt: Date.now(),
                 });
             }

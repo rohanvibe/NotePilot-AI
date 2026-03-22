@@ -27,6 +27,7 @@ export interface Note {
     summary?: string;
     keyPoints?: string[];
     importantTerms?: string[];
+    studyPath?: Array<{ step: number; task: string }>;
     createdAt: number;
     updatedAt?: number;
     simplifiedContent?: string;
@@ -75,6 +76,9 @@ interface AppState {
     streak: number;
     lastActive: number;
     totalTimeSaved: number;
+    dailyGoal: number;
+    cardsReviewedToday: number;
+    generationCount: number;
     addNotes: (notes: Note[]) => void;
     updateNote: (id: string, data: Partial<Note>) => void;
     deleteNote: (id: string) => void;
@@ -89,6 +93,8 @@ interface AppState {
     addXp: (amount: number) => void;
     addTimeSaved: (minutes: number) => void;
     updateStreak: () => void;
+    incrementGeneration: () => void;
+    resetDailyStats: () => void;
     clearAll: () => void;
 }
 
@@ -104,6 +110,9 @@ export const useStore = create<AppState>()(
             streak: 0,
             lastActive: Date.now(),
             totalTimeSaved: 0,
+            dailyGoal: 20,
+            cardsReviewedToday: 0,
+            generationCount: 0,
             addNotes: (newNotes) => set((state) => {
                 const xpGain = newNotes.length * 50;
                 const newXp = state.xp + xpGain;
@@ -112,7 +121,8 @@ export const useStore = create<AppState>()(
                     notes: [...state.notes, ...newNotes],
                     xp: newXp,
                     level: newLevel,
-                    totalTimeSaved: state.totalTimeSaved + (newNotes.length * 15) // Assume 15m saved per doc
+                    totalTimeSaved: state.totalTimeSaved + (newNotes.length * 15),
+                    generationCount: state.generationCount + 1
                 };
             }),
             updateNote: (id, data) =>
@@ -129,10 +139,12 @@ export const useStore = create<AppState>()(
             })),
             updateFlashcard: (id, data) =>
                 set((state) => {
+                    const isReview = !!data.difficulty;
                     const isSuccess = data.difficulty && data.difficulty !== 'hard';
                     return {
                         flashcards: state.flashcards.map((f) => (f.id === id ? { ...f, ...data } : f)),
-                        xp: isSuccess ? state.xp + 20 : state.xp + 5
+                        xp: isSuccess ? state.xp + 20 : state.xp + 5,
+                        cardsReviewedToday: isReview ? state.cardsReviewedToday + 1 : state.cardsReviewedToday
                     };
                 }),
             setFlashcards: (flashcards) => set({ flashcards }),
@@ -152,13 +164,25 @@ export const useStore = create<AppState>()(
                 const diff = now - state.lastActive;
                 const oneDay = 24 * 60 * 60 * 1000;
                 
+                // Reset daily stats if it's a new day
+                const isNewDay = new Date(now).toDateString() !== new Date(state.lastActive).toDateString();
+                
+                let newStreak = state.streak;
                 if (diff < oneDay * 2) {
-                    return { streak: state.streak + 1, lastActive: now };
+                    if (isNewDay) newStreak += 1;
                 } else {
-                    return { streak: 1, lastActive: now };
+                    newStreak = 1;
                 }
+                
+                return { 
+                    streak: newStreak, 
+                    lastActive: now,
+                    cardsReviewedToday: isNewDay ? 0 : state.cardsReviewedToday 
+                };
             }),
-            clearAll: () => set({ notes: [], flashcards: [], relationships: [], courses: [], xp: 0, level: 1, streak: 0, totalTimeSaved: 0 }),
+            incrementGeneration: () => set((state) => ({ generationCount: state.generationCount + 1 })),
+            resetDailyStats: () => set({ cardsReviewedToday: 0 }),
+            clearAll: () => set({ notes: [], flashcards: [], relationships: [], courses: [], xp: 0, level: 1, streak: 0, totalTimeSaved: 0, cardsReviewedToday: 0, generationCount: 0 }),
         }),
         {
             name: "ai-notes-storage-v2",

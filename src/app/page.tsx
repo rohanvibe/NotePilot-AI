@@ -17,6 +17,7 @@ import {
   ClipboardCheck,
   Zap,
   FileText,
+  GraduationCap,
 } from "lucide-react";
 import { useStore } from "@/store/useStore";
 
@@ -65,15 +66,19 @@ const traverseFileTree = async (item: any): Promise<File[]> => {
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 export default function Landing() {
-  const { addNotes, addFlashcards, notes, totalTimeSaved, level, xp } = useStore();
+  const { addNotes, addFlashcards, notes, totalTimeSaved, level, xp, flashcards, cardsReviewedToday, dailyGoal, generationCount } = useStore();
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPermission, setShowPermission] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [summary, setSummary] = useState<SummaryResult | null>(null);
   const [pasteMode, setPasteMode] = useState(false);
   const [pasteContent, setPasteContent] = useState("");
+
+  const dueCards = flashcards.filter(c => c.nextReviewDate <= Date.now()).length;
+  const studyProgress = Math.min((cardsReviewedToday / dailyGoal) * 100, 100);
 
   const processFiles = useCallback(
     async (files: File[]) => {
@@ -141,6 +146,10 @@ export default function Landing() {
               noteId: newNotes[0]?.id,
             }))
           );
+        }
+
+        if (generationCount >= 5) {
+          setShowUpgrade(true);
         }
 
         setSummary({
@@ -247,10 +256,25 @@ export default function Landing() {
       {!summary ? (
         <div className="w-full max-w-4xl space-y-12 text-center relative z-10">
           <div className="space-y-4 animate-in fade-in slide-in-from-top-10 duration-1000">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-bold text-indigo-300 uppercase tracking-[0.2em] shadow-inner">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-bold text-indigo-300 uppercase tracking-[0.2em] shadow-inner mb-2">
               <Sparkles className="w-3 h-3" aria-hidden="true" />
               Intelligence Engine v2.0
             </div>
+
+            {/* Daily Goal Tracker */}
+            <div className="max-w-xs mx-auto mb-8 p-4 rounded-3xl bg-white/5 border border-white/10 space-y-3">
+              <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <span>Daily Goal</span>
+                <span className="text-indigo-400">{cardsReviewedToday} / {dailyGoal} Cards</span>
+              </div>
+              <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-indigo-500 transition-all duration-1000 shadow-[0_0_10px_rgba(99,102,241,0.5)]"
+                  style={{ width: `${studyProgress}%` }}
+                />
+              </div>
+            </div>
+
             <h1 className="text-6xl md:text-9xl font-black tracking-tighter text-white leading-[0.9]">
               Chaos into <br />
               <span className="bg-linear-to-r from-indigo-300 via-purple-300 to-pink-300 bg-clip-text text-transparent">
@@ -398,15 +422,24 @@ export default function Landing() {
             </div>
           )}
 
-          {notes.length > 0 && (
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+            {dueCards > 0 && (
+              <button
+                onClick={() => router.push("/flashcards")}
+                className="px-10 py-5 bg-indigo-600 text-white rounded-3xl font-black text-xl hover:scale-105 transition-all flex items-center gap-3 shadow-2xl shadow-indigo-500/20"
+              >
+                Continue Study
+                <div className="px-2 py-0.5 rounded-lg bg-white/20 text-xs font-black">{dueCards} Due</div>
+              </button>
+            )}
             <button
               onClick={() => router.push("/dashboard")}
-              className="px-10 py-5 bg-white text-black rounded-3xl font-black text-xl hover:scale-105 transition-all flex items-center gap-3 mx-auto shadow-2xl"
+              className="px-10 py-5 bg-white/5 border border-white/10 text-white rounded-3xl font-black text-xl hover:bg-white/10 transition-all flex items-center gap-3 shadow-2xl"
             >
               Go to Dashboard
               <ArrowRight className="w-6 h-6" />
             </button>
-          )}
+          </div>
         </div>
       ) : (
         <div className="w-full max-w-3xl space-y-10 animate-in zoom-in duration-700">
@@ -452,32 +485,61 @@ export default function Landing() {
                 </div>
               </section>
             </div>
+
+            {/* Structured Study Path */}
+            <section className="space-y-6 pt-6 border-t border-white/5">
+                <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                    <GraduationCap className="w-4 h-4 text-amber-500" /> Suggested Study Path
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* @ts-ignore */}
+                    {notes[0]?.studyPath?.slice(0, 3).map((step: any, i: number) => (
+                        <div key={i} className="p-4 rounded-2xl bg-white/5 border border-white/5 space-y-2 text-left">
+                            <span className="text-[10px] font-black text-indigo-400 uppercase tracking-tighter">Step {step.step}</span>
+                            <p className="text-xs font-bold text-slate-200 leading-tight">{step.task}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
           </div>
 
           <div className="flex flex-col md:flex-row gap-4">
             <button
+              onClick={() => router.push("/dashboard/graph")}
+              className="group flex-1 py-8 bg-linear-to-br from-white to-slate-200 text-black rounded-[36px] text-2xl font-black transition-all hover:scale-[1.03] flex flex-col items-center justify-center gap-1 shadow-3xl shadow-white/5 relative overflow-hidden"
+            >
+              <div className="flex items-center gap-4 relative z-10">
+                Visualize Idea Map
+                <ArrowRight className="w-10 h-10 group-hover:translate-x-2 transition-transform" aria-hidden="true" />
+              </div>
+              <span className="text-[11px] font-black uppercase text-slate-500 tracking-[0.2em] relative z-10 opacity-70 group-hover:opacity-100 transition-opacity">
+                See how your topics connect
+              </span>
+              <div className="absolute inset-x-0 bottom-0 h-1 bg-indigo-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+            </button>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <button
               onClick={() => router.push("/dashboard")}
-              className="flex-1 py-6 bg-white text-black rounded-[28px] text-2xl font-black transition-all hover:scale-105 flex items-center justify-center gap-4 shadow-3xl shadow-white/5"
+              className="px-8 py-5 bg-white/5 border border-white/10 text-white rounded-[28px] text-lg font-black transition-all hover:bg-white/10 flex items-center justify-center gap-3"
             >
               Enter Second Brain
-              <ArrowRight className="w-8 h-8" aria-hidden="true" />
             </button>
             <button
               onClick={() => {
-                const text = `I just organized my messy notes with NotePilot AI! Check it out: ${window.location.host}`;
-                if (navigator.share) {
-                  navigator.share({ title: 'NotePilot AI', text, url: window.location.href });
-                } else {
-                  alert('Ready to share!');
-                }
+                alert('Exporting flashcards as study set image...');
               }}
-              className="px-10 py-6 bg-indigo-600 text-white rounded-[28px] text-xl font-black transition-all hover:bg-indigo-500 flex items-center justify-center gap-4 shadow-3xl shadow-indigo-500/20 active:scale-95 focus-visible:ring-4 focus-visible:ring-indigo-400 outline-none"
-              aria-label="Share your organized knowledge"
+              className="px-8 py-5 bg-indigo-600 text-white rounded-[28px] text-lg font-black transition-all hover:bg-indigo-500 flex items-center justify-center gap-3 shadow-3xl shadow-indigo-500/20"
             >
-              Share with Friends
-              <Share2 className="w-6 h-6" aria-hidden="true" />
+              <Share2 className="w-6 h-6" />
+              Share Study Set
             </button>
           </div>
+
+          <p className="text-center text-slate-500 font-bold text-xs uppercase tracking-widest animate-pulse">
+            Sign up to save this brain permanently
+          </p>
         </div>
       )}
 
@@ -521,6 +583,45 @@ export default function Landing() {
                 className="w-full py-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl font-black text-slate-400 transition-all"
               >
                 Cancel Upload
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Upgrade Modal */}
+      {showUpgrade && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
+          <div className="bg-[#0a0a0b] border border-indigo-500/30 w-full max-w-lg rounded-[48px] p-12 space-y-8 animate-in zoom-in duration-300 relative overflow-hidden shadow-[0_0_80px_rgba(99,102,241,0.2)] text-center">
+            <div className="absolute top-0 left-0 w-full h-1 bg-indigo-500" />
+            <button
+              onClick={() => setShowUpgrade(false)}
+              className="absolute top-8 right-8 text-slate-500 hover:text-white"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <div className="w-24 h-24 rounded-full bg-indigo-500/10 text-indigo-400 flex items-center justify-center mx-auto mb-4 border border-indigo-500/20">
+              <Sparkles className="w-12 h-12" />
+            </div>
+            <div className="space-y-4">
+              <h2 className="text-4xl font-black text-white leading-tight">
+                Upgrade to Pro
+              </h2>
+              <p className="text-slate-400 font-medium text-lg leading-relaxed">
+                Continue learning without limits. Upgrade for unlimited flashcards, instant results, and elite study paths.
+              </p>
+            </div>
+            <div className="flex flex-col gap-4">
+              <button
+                onClick={() => window.location.href = '#'}
+                className="w-full py-6 bg-indigo-600 hover:bg-indigo-500 rounded-3xl font-black text-xl text-white transition-all shadow-xl shadow-indigo-500/30 active:scale-95"
+              >
+                Unlock Unlimited Access
+              </button>
+              <button
+                onClick={() => setShowUpgrade(false)}
+                className="w-full py-4 text-slate-500 hover:text-white font-bold text-sm uppercase tracking-widest transition-all"
+              >
+                Maybe Later
               </button>
             </div>
           </div>

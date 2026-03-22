@@ -11,6 +11,7 @@ import {
     ChevronRight,
     GraduationCap,
     XCircle,
+    Loader2,
 } from "lucide-react";
 import { calculateNextReview } from "@/lib/spacedRepetition";
 
@@ -19,6 +20,9 @@ export default function FlashcardsPage() {
     const [isStudying, setIsStudying] = useState(false);
     const [currentIdx, setCurrentIdx] = useState(0);
     const [showBack, setShowBack] = useState(false);
+    const [tutorMode, setTutorMode] = useState(false);
+    const [userResponse, setUserResponse] = useState("");
+    const [feedback, setFeedback] = useState<string | null>(null);
 
     // Initialize with 0 and set on mount to avoid purity errors
     const [now, setNow] = useState(0);
@@ -56,10 +60,23 @@ export default function FlashcardsPage() {
         if (currentIdx < dueCards.length - 1) {
             setCurrentIdx((prev) => prev + 1);
             setShowBack(false);
+            setUserResponse("");
+            setFeedback(null);
         } else {
             setIsStudying(false);
             setCurrentIdx(0);
         }
+    };
+
+    const handleTutorSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!userResponse.trim()) return;
+        setFeedback("Thinking...");
+        // Mock feedback - in real app would call API
+        setTimeout(() => {
+            setShowBack(true);
+            setFeedback(null);
+        }, 800);
     };
 
     if (now === 0) return null; // Wait for mount to avoid hydration mismatch and purity errors
@@ -76,13 +93,24 @@ export default function FlashcardsPage() {
                     </p>
                 </div>
                 {!isStudying && dueCards.length > 0 && (
-                    <button
-                        onClick={() => setIsStudying(true)}
-                        className="px-8 py-4 bg-orange-600 hover:bg-orange-500 rounded-2xl font-black flex items-center gap-3 transition-all shadow-xl shadow-orange-500/20"
-                    >
-                        <Brain className="w-6 h-6" />
-                        Start Session ({dueCards.length})
-                    </button>
+                    <div className="flex items-center gap-4">
+                        <button 
+                            onClick={() => setTutorMode(!tutorMode)}
+                            className={`px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all border ${tutorMode ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-white/5 border-white/10 text-slate-400'}`}
+                        >
+                            <span className="flex items-center gap-2">
+                                <GraduationCap className="w-4 h-4" />
+                                {tutorMode ? "Tutor: ON" : "Tutor: OFF"}
+                            </span>
+                        </button>
+                        <button
+                            onClick={() => setIsStudying(true)}
+                            className="px-8 py-4 bg-orange-600 hover:bg-orange-500 rounded-2xl font-black flex items-center gap-3 transition-all shadow-xl shadow-orange-500/20"
+                        >
+                            <Brain className="w-6 h-6" />
+                            Start Session ({dueCards.length})
+                        </button>
+                    </div>
                 )}
             </header>
 
@@ -208,12 +236,14 @@ export default function FlashcardsPage() {
                                 <div className="p-4 rounded-3xl bg-orange-500/10 text-orange-500">
                                     <Brain className="w-10 h-10" />
                                 </div>
-                                <h2 className="text-3xl md:text-4xl font-black leading-tight text-white">
+                                <h2 className="text-3xl md:text-4xl font-black leading-tight text-white px-4">
                                     {currentCard?.front}
                                 </h2>
-                                <p className="text-slate-400 font-bold uppercase tracking-widest text-xs animate-pulse">
-                                    Click to Reveal Answer
-                                </p>
+                                {!tutorMode && (
+                                    <p className="text-slate-400 font-bold uppercase tracking-widest text-xs animate-pulse">
+                                        Click to Reveal Answer
+                                    </p>
+                                )}
                             </div>
 
                             {/* Back */}
@@ -223,13 +253,38 @@ export default function FlashcardsPage() {
                                     <h3 className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
                                         Answer
                                     </h3>
-                                    <p className="text-3xl font-black text-white leading-tight">
+                                    <p className="text-2xl md:text-3xl font-black text-white leading-tight">
                                         {currentCard?.back}
                                     </p>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    {tutorMode && !showBack && (
+                        <form onSubmit={handleTutorSubmit} className="space-y-4 animate-in slide-in-from-top-2 duration-300">
+                             <div className="relative">
+                                <textarea
+                                    value={userResponse}
+                                    onChange={(e) => setUserResponse(e.target.value)}
+                                    placeholder="Explain your answer here..."
+                                    className="w-full h-32 bg-white/5 border border-white/10 rounded-3xl p-6 text-white placeholder:text-slate-600 font-medium resize-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none"
+                                />
+                                {feedback && (
+                                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm rounded-3xl flex items-center justify-center font-bold text-indigo-300">
+                                        <Loader2 className="w-5 h-5 animate-spin mr-2" /> {feedback}
+                                    </div>
+                                )}
+                             </div>
+                             <button 
+                                type="submit"
+                                disabled={!userResponse.trim()}
+                                className="w-full py-5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-[28px] font-black text-xl transition-all shadow-xl shadow-indigo-500/20"
+                             >
+                                Submit Answer
+                             </button>
+                        </form>
+                    )}
 
                     {showBack ? (
                         <div className="grid grid-cols-4 gap-3 animate-in slide-in-from-bottom-4 duration-300">
