@@ -13,7 +13,6 @@ import {
     Search,
     Sparkles,
     Files,
-    CheckCircle2,
     RefreshCw,
     XCircle,
     Calendar,

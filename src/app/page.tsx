@@ -16,7 +16,6 @@ import {
   Trophy,
   ClipboardCheck,
   Zap,
-  FileText,
   GraduationCap,
 } from "lucide-react";
 import { useStore } from "@/store/useStore";
@@ -168,7 +167,7 @@ export default function Landing() {
         setIsUploading(false);
       }
     },
-    [addNotes, addFlashcards]
+    [addNotes, addFlashcards, generationCount]
   );
 
   const loadDemo = () => {
@@ -492,8 +491,7 @@ export default function Landing() {
                     <GraduationCap className="w-4 h-4 text-amber-500" /> Suggested Study Path
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {/* @ts-ignore */}
-                    {notes[0]?.studyPath?.slice(0, 3).map((step: any, i: number) => (
+                    {notes[0]?.studyPath?.slice(0, 3).map((step: { step: number; task: string }, i: number) => (
                         <div key={i} className="p-4 rounded-2xl bg-white/5 border border-white/5 space-y-2 text-left">
                             <span className="text-[10px] font-black text-indigo-400 uppercase tracking-tighter">Step {step.step}</span>
                             <p className="text-xs font-bold text-slate-200 leading-tight">{step.task}</p>
