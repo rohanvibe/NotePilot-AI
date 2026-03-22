@@ -86,10 +86,10 @@ export default function FlashcardsPage() {
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8">
                 <div className="space-y-1">
                     <h1 className="text-4xl font-black bg-linear-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent">
-                        Memory Engine
+                        Practice Session
                     </h1>
                     <p className="text-slate-300 font-medium tracking-tight">
-                        Active recall via Spaced Repetition (SM-2)
+                        Smart learning for better memory
                     </p>
                 </div>
                 {!isStudying && dueCards.length > 0 && (
@@ -121,7 +121,7 @@ export default function FlashcardsPage() {
                             <div className="flex items-center justify-between">
                                 <h2 className="text-2xl font-bold flex items-center gap-2">
                                     <Layers className="w-6 h-6 text-amber-500" aria-hidden="true" />
-                                    Knowledge Inventory
+                                    Your Cards
                                 </h2>
                                 <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-slate-300 uppercase tracking-widest shadow-inner">
                                     {flashcards.length} Total Cards
@@ -185,10 +185,10 @@ export default function FlashcardsPage() {
                     <div className="space-y-6">
                         <section className="bg-indigo-600/10 border border-indigo-500/20 rounded-[40px] p-8 space-y-4">
                             <Sparkles className="w-10 h-10 text-indigo-400" />
-                            <h3 className="text-xl font-bold">Smart Insights</h3>
+                            <h3 className="text-xl font-bold">Smart Priority</h3>
                             <p className="text-slate-400 text-sm leading-relaxed">
-                                Our SM-2 algorithm prioritizes cards you find difficult, ensuring
-                                zero-waste studying.
+                                Our system focuses on cards you find tricky, so you learn faster 
+                                and waste no time.
                             </p>
                             <div className="pt-4">
                                 <button className="text-indigo-400 font-bold text-xs uppercase tracking-widest border-b border-indigo-500/30 pb-1">
@@ -317,7 +317,7 @@ export default function FlashcardsPage() {
                                 onClick={() => setShowBack(true)}
                                 className="px-12 py-5 bg-white text-black rounded-[28px] font-black text-xl hover:scale-105 transition-all flex items-center gap-3"
                             >
-                                Reveal Secret
+                                Show Answer
                                 <ChevronRight className="w-6 h-6" />
                             </button>
                         </div>

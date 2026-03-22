@@ -257,7 +257,7 @@ export default function Landing() {
           <div className="space-y-4 animate-in fade-in slide-in-from-top-10 duration-1000">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-bold text-indigo-300 uppercase tracking-[0.2em] shadow-inner mb-2">
               <Sparkles className="w-3 h-3" aria-hidden="true" />
-              Intelligence Engine v2.0
+              Smart Assistant v2.0
             </div>
 
             {/* Daily Goal Tracker */}
@@ -281,8 +281,8 @@ export default function Landing() {
               </span>
             </h1>
             <p className="text-slate-300 text-lg md:text-2xl font-medium max-w-2xl mx-auto leading-relaxed">
-              Drop your messy folders. Let AI build your second brain, 
-              generate knowledge maps, and create study sets in seconds.
+              Drop your messy folders. Let AI clean your notes, 
+              find connections, and create practice sets in seconds.
             </p>
           </div>
 
@@ -293,11 +293,11 @@ export default function Landing() {
             </div>
             <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 text-slate-300 font-bold text-xs">
                 <Trophy className="w-3.5 h-3.5 text-amber-400" />
-                Level {level} Architect
+                Level {level} Learner
             </div>
              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 font-bold text-xs">
                 <Zap className="w-3.5 h-3.5" />
-                {xp} Intelligence XP
+                {xp} Study Points
             </div>
           </div>
 
@@ -309,7 +309,7 @@ export default function Landing() {
             >
               <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
               <span className="relative flex items-center gap-3">
-                Upload My Brain
+                Get Started
                 <UploadCloud className="w-6 h-6" aria-hidden="true" />
               </span>
             </button>
@@ -347,7 +347,7 @@ export default function Landing() {
                 
                 <div className="space-y-2 relative z-10 text-center">
                   <p className="text-3xl font-black tracking-tight text-white">
-                    {isUploading ? "Synthesizing Knowledge..." : "Drop files or folders here"}
+                    {isUploading ? "Reading your notes..." : "Drop files or folders here"}
                   </p>
                   <p className="text-slate-400 font-bold text-sm tracking-[0.2em] uppercase opacity-80">
                     AI supports PDF, MD, TXT, DOCX
@@ -446,9 +446,9 @@ export default function Landing() {
             <div className="w-24 h-24 rounded-[32px] bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 className="w-12 h-12" />
             </div>
-            <h2 className="text-5xl font-black">Knowledge Synthesized</h2>
+            <h2 className="text-5xl font-black">Your Notes are Ready</h2>
             <p className="text-slate-400 text-lg font-medium">
-              Behold the impact of AI organization on your messy notes.
+              We&apos;ve organized everything for you. Ready to start?
             </p>
           </div>
 
@@ -456,13 +456,12 @@ export default function Landing() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <section className="space-y-4">
                 <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-500" /> Structure
-                  Evolution
+                  <ShieldCheck className="w-4 h-4 text-emerald-500" /> Organized For You
                 </h3>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider">
-                    <span className="text-slate-400 italic">Messy Chaos</span>
-                    <span className="text-indigo-300">Structured Topics</span>
+                    <span className="text-slate-400 italic">Messy Notes</span>
+                    <span className="text-indigo-300">Clean Topics</span>
                   </div>
                   <div className="h-3 bg-white/5 rounded-full overflow-hidden flex">
                     <div className="h-full bg-indigo-500 w-[70%]" />
@@ -488,7 +487,7 @@ export default function Landing() {
             {/* Structured Study Path */}
             <section className="space-y-6 pt-6 border-t border-white/5">
                 <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                    <GraduationCap className="w-4 h-4 text-amber-500" /> Suggested Study Path
+                    <GraduationCap className="w-4 h-4 text-amber-500" /> Your Learning Plan
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {notes[0]?.studyPath?.slice(0, 3).map((step: { step: number; task: string }, i: number) => (
@@ -507,11 +506,11 @@ export default function Landing() {
               className="group flex-1 py-8 bg-linear-to-br from-white to-slate-200 text-black rounded-[36px] text-2xl font-black transition-all hover:scale-[1.03] flex flex-col items-center justify-center gap-1 shadow-3xl shadow-white/5 relative overflow-hidden"
             >
               <div className="flex items-center gap-4 relative z-10">
-                Visualize Idea Map
+                See Connections
                 <ArrowRight className="w-10 h-10 group-hover:translate-x-2 transition-transform" aria-hidden="true" />
               </div>
               <span className="text-[11px] font-black uppercase text-slate-500 tracking-[0.2em] relative z-10 opacity-70 group-hover:opacity-100 transition-opacity">
-                See how your topics connect
+                How your topics link together
               </span>
               <div className="absolute inset-x-0 bottom-0 h-1 bg-indigo-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
             </button>
@@ -536,7 +535,7 @@ export default function Landing() {
           </div>
 
           <p className="text-center text-slate-500 font-bold text-xs uppercase tracking-widest animate-pulse">
-            Sign up to save this brain permanently
+            Sign up to save your work forever
           </p>
         </div>
       )}

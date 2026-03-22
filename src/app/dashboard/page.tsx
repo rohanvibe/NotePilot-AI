@@ -100,16 +100,15 @@ export default function Dashboard() {
             <div className="flex-1 flex flex-col items-center justify-center p-6 space-y-6">
                 <div className="p-8 rounded-[40px] bg-white/5 border border-white/10 shadow-2xl">
                     <Folder className="w-16 h-16 text-indigo-500 mb-4 mx-auto" />
-                    <h2 className="text-3xl font-bold text-center">Your brain is empty</h2>
-                    <p className="text-slate-400 text-center max-w-sm mt-2">
-                        Go to the Upload section and drop some messy notes to start building
-                        your second brain.
+                    <h2 className="text-3xl font-bold text-center text-white">Your study space is empty</h2>
+                    <p className="text-slate-400 text-center max-w-sm mt-2 font-medium">
+                        Add some messy notes to start organizing your studies.
                     </p>
                     <button
                         onClick={() => router.push("/")}
-                        className="mt-8 w-full py-4 bg-indigo-600 hover:bg-indigo-500 rounded-2xl font-bold transition-all shadow-lg shadow-indigo-500/20"
+                        className="mt-8 w-full py-4 bg-indigo-600 hover:bg-indigo-500 rounded-2xl font-bold transition-all shadow-lg shadow-indigo-500/20 text-white"
                     >
-                        Upload Now
+                        Add My First Note
                     </button>
                 </div>
             </div>
@@ -122,10 +121,10 @@ export default function Dashboard() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <header className="space-y-1">
                     <h1 className="text-4xl font-bold bg-linear-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent">
-                        Dashboard
+                        Learning Hub
                     </h1>
                     <p className="text-zinc-400 font-medium">
-                        Managing your digital knowledge base
+                        Review and manage your studies
                     </p>
                 </header>
 
@@ -135,11 +134,11 @@ export default function Dashboard() {
                     </div>
                     <input
                         type="text"
-                        placeholder="Search concepts, topics, or notes..."
+                        placeholder="Search your notes or topics..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all backdrop-blur-md outline-none"
-                        aria-label="Search concepts, topics, or notes"
+                        aria-label="Search your notes or topics"
                     />
                 </div>
             </div>
@@ -153,46 +152,46 @@ export default function Dashboard() {
                     <div className="space-y-6 max-w-lg">
                         <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-xs font-black text-indigo-400 uppercase tracking-[0.2em] shadow-inner">
                             <Sparkles className="w-4 h-4" />
-                            Second Brain Active
+                            Assistant Ready
                         </div>
                         <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
-                            Your knowledge, <br />
-                            <span className="text-indigo-300">synthesized.</span>
+                            Your studies, <br />
+                            <span className="text-indigo-300">organized.</span>
                         </h2>
                         <p className="text-slate-300 text-lg font-medium leading-relaxed">
-                            NotePilot has decoded your messy inputs into a structured hierarchy. 
-                            Ready for deep learning and discovery.
+                            NotePilot has cleaned up your notes and grouped them by topic. 
+                            You are all set for deep learning.
                         </p>
                     </div>
 
                     <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full">
                         <StatCard
                             icon={<Files className="w-5 h-5" />}
-                            label="Archive"
+                            label="Files"
                             value={notes.length}
                             color="blue"
-                            description="Source docs"
+                            description="Study notes"
                         />
                         <StatCard
                             icon={<Tags className="w-5 h-5" />}
-                            label="Domains"
+                            label="Topics"
                             value={Object.keys(groupedNotes).length}
                             color="purple"
-                            description="Knowledge areas"
+                            description="Main areas"
                         />
                         <StatCard
                             icon={<Zap className="w-5 h-5" />}
-                            label="Insights"
+                            label="Practice"
                             value={flashcards.length}
                             color="amber"
                             description="Flashcards"
                         />
                         <StatCard
                             icon={<GraduationCap className="w-5 h-5" />}
-                            label="Mastery"
+                            label="Progress"
                             value={Math.min(100, notes.length * 5)}
                             color="emerald"
-                            description="Total progress"
+                            description="Total mastered"
                         />
                     </div>
                 </div>
@@ -212,7 +211,7 @@ export default function Dashboard() {
                                         {topic}
                                     </h2>
                                     <p className="text-slate-400 text-sm font-medium">
-                                        {topicNotes.length} source files
+                                        {topicNotes.length} files
                                     </p>
                                 </div>
                             </div>
