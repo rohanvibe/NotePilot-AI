@@ -11,17 +11,21 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "No text provided" }, { status: 400 });
         }
 
-        const systemPrompt = `You are an AI Tutor. Rewrite the following notes in extremely simple, beginner-friendly language.
-        Use analogies, simple words, and clear explanations. 
-        Structure it with:
-        ### The Big Idea
-        [Simple explanation]
+        const systemPrompt = `You are an AI Tutor. Rewrite the following notes for absolute clarity, stripping away complex jargon while maintaining professional depth.
+        STRICT RULES:
+        1. NO analogies (no "magic strings", "invisible dancers", etc.).
+        2. Use concrete, direct, and objective language.
+        3. No fluff words like "Imagine", "It's like", or "Behold".
         
-        ### Breaking it Down
-        [1-2-3 list of steps or concepts]
+        STRUCTURE:
+        ### Essential Concept
+        [A direct, one-paragraph explanation of what this is]
         
-        ### Why it Matters
-        [Why this is important in the real world]
+        ### Key Breakdown
+        [Numbered list of the critical technical steps or facts]
+        
+        ### Practical Application
+        [How this is used in the real world or industry]
         
         Return markdown.`;
 

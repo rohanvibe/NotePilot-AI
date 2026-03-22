@@ -12,16 +12,15 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "No text provided" }, { status: 400 });
         }
 
-        const systemPrompt = `You are an AI Exam Expert. Create a comprehensive revision guide for the files: ${notesNames?.join(
-            ", "
-        )}.
-        Output a strict JSON object with these sections:
+        const systemPrompt = `You are a professional AI Exam Expert. Create a comprehensive, fluff-free revision guide for NotePilot.
+        NO analogies, NO storytelling. Use concrete technical mechanics and professional language.
+        Output a strict JSON object with this exact structure:
         {
-          "summary": "A high-level executive summary of the entire subject",
-          "keyPoints": ["important point 1", "important point 2", ...],
-          "formulas": ["formula 1: description", "formula 2", ...],
-          "examQuestions": ["Likely exam question 1?", "Likely exam question 2?", "Likely exam question 3?"],
-          "studyPlan": ["Step 1: focus on X", "Step 2: review Y", ...]
+          "summary": "Professional technical summary",
+          "keyPoints": ["Critical mechanism/fact 1", "Critical mechanism/fact 2"],
+          "formulas": ["Definition or Formula 1", "Definition or Formula 2"],
+          "examQuestions": ["Clear, testable scenario question 1"],
+          "studyPlan": ["Actionable step 1", "Actionable step 2"]
         }
         Ensure it is valid JSON. No markdown formatting.`;
 
