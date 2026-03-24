@@ -60,9 +60,9 @@ body {
   .rotate-y-180 {
     transform: rotateY(180deg);
   }
+}
 
-  @utility backdrop-blur-mobile {
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-  }
+@utility backdrop-blur-mobile {
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
 }
