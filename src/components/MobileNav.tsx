@@ -20,13 +20,13 @@ export default function MobileNav() {
             {/* Overlay */}
             {isOpen && (
                 <div 
-                    className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 animate-in fade-in duration-300"
+                    className="fixed inset-0 bg-black/80 backdrop-blur-md z-100 animate-in fade-in duration-300"
                     onClick={() => setIsOpen(false)}
                 />
             )}
 
             {/* Drawer */}
-            <div className={`fixed inset-y-0 left-0 w-72 bg-zinc-950/95 backdrop-blur-2xl z-50 shadow-2xl border-r border-white/10 transform transition-transform duration-300 ease-out ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
+            <div className={`fixed inset-y-0 left-0 w-80 bg-zinc-950 z-101 shadow-[0_0_50px_rgba(0,0,0,0.8)] border-r border-white/10 transform transition-transform duration-300 ease-out ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
                 <div className="flex flex-col h-full relative">
                     <button
                         onClick={() => setIsOpen(false)}
