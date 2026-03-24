@@ -61,8 +61,3 @@ body {
     transform: rotateY(180deg);
   }
 }
-
-@utility backdrop-blur-mobile {
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-}

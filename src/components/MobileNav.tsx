@@ -20,7 +20,7 @@ export default function MobileNav() {
             {/* Overlay */}
             {isOpen && (
                 <div 
-                    className="fixed inset-0 bg-black/80 backdrop-blur-mobile z-100 animate-in fade-in duration-300"
+                    className="fixed inset-0 bg-black/95 z-100 animate-in fade-in duration-300"
                     onClick={() => setIsOpen(false)}
                 />
             )}
