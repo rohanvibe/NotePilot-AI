@@ -20,14 +20,14 @@ export default function MobileSidebar() {
             {/* Overlay */}
             {isSidebarOpen && (
                 <div 
-                    className="fixed inset-0 bg-black/95 z-[999] animate-in fade-in duration-300"
+                    className="fixed inset-0 bg-black/95 z-999 animate-in fade-in duration-300"
                     onClick={() => setSidebarOpen(false)}
                 />
             )}
 
             {/* Drawer */}
             <div 
-                className={`fixed inset-y-0 left-0 w-80 bg-zinc-950 z-[1000] shadow-[0_0_50px_rgba(0,0,0,0.8)] border-r border-white/10 transform transition-transform duration-300 ease-out ${
+                className={`fixed inset-y-0 left-0 w-80 bg-zinc-950 z-1000 shadow-[0_0_50px_rgba(0,0,0,0.8)] border-r border-white/10 transform transition-transform duration-300 ease-out ${
                     isSidebarOpen ? "translate-x-0" : "-translate-x-full"
                 }`}
             >
