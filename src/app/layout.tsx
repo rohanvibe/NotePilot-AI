@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import MobileNav from "@/components/MobileNav";
+import MobileSidebar from "@/components/MobileSidebar";
 import StreakProvider from "@/components/StreakProvider";
 import Script from "next/script";
 
@@ -65,6 +66,9 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} bg-zinc-950 text-zinc-100 min-h-screen flex antialiased selection:bg-indigo-500/30`}>
         <StreakProvider />
+        {/* Mobile Navigation Drawer (Global) */}
+        <MobileSidebar />
+        
         {/* Grain Effect */}
         <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
         

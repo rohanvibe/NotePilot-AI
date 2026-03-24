@@ -79,6 +79,8 @@ interface AppState {
     dailyGoal: number;
     cardsReviewedToday: number;
     generationCount: number;
+    isSidebarOpen: boolean;
+    setSidebarOpen: (open: boolean) => void;
     addNotes: (notes: Note[]) => void;
     updateNote: (id: string, data: Partial<Note>) => void;
     deleteNote: (id: string) => void;
@@ -113,6 +115,8 @@ export const useStore = create<AppState>()(
             dailyGoal: 20,
             cardsReviewedToday: 0,
             generationCount: 0,
+            isSidebarOpen: false,
+            setSidebarOpen: (isOpen) => set({ isSidebarOpen: isOpen }),
             addNotes: (newNotes) => set((state) => {
                 const xpGain = newNotes.length * 50;
                 const newXp = state.xp + xpGain;

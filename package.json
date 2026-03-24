@@ -27,6 +27,7 @@
     "@serwist/precaching": "^9.5.6",
     "@serwist/sw": "^9.5.6",
     "clsx": "^2.1.1",
+    "css": "^3.0.0",
     "d3-force": "^3.0.0",
     "framer-motion": "^12.35.1",
     "idb-keyval": "^6.2.2",
@@ -37,6 +38,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-force-graph-2d": "^1.29.1",
+    "tailwind": "^4.0.0",
     "tailwind-merge": "^3.5.0",
     "zustand": "^5.0.11"
   },
