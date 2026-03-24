@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SAMBANOVA_API_KEY: ${{ secrets.SAMBANOVA_API_KEY }}
+      NEXT_PUBLIC_APP_URL: https://notepilot.vercel.app
 
     steps:
     - uses: actions/checkout@v4
@@ -27,6 +30,3 @@ jobs:
       
     - name: Build
       run: npm run build
-      env:
-        SAMBANOVA_API_KEY: ${{ secrets.SAMBANOVA_API_KEY }}
-        NEXT_PUBLIC_APP_URL: https://notepilot.vercel.app
